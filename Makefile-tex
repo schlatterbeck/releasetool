@@ -95,6 +95,9 @@ CP=/bin/cp
 	$(TRANS) -B '#bfbfbf' $(FIGDIR)/tmp.gif > $(FIGDIR)/$*.gif
 	$(RM) $(FIGDIR)/tmp.gif
 
+%.pdf: %.eps
+	$(PS2PDF) $< $@
+
 %.pdf: %.ps
 	$(PS2PDF) $< $@
 
