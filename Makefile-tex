@@ -1,0 +1,146 @@
+##
+##  File:          $RCSfile$
+##  Version:       $Revision$
+##  Last changes:  $Date$
+##  Author:        $Author$
+##
+##  FileID: $Id$
+##
+
+PROJARCHIVE=$(PROJECT).zip
+SOURCES=$(MAINTEXSRC) $(TEXSRC) $(OBJSRC) $(EPSSRC) $(BIBSRC) $(SKSRC)
+DVIFILE=$(MAINTEXSRC:.tex=.dvi)
+PSFILES=$(MAINTEXSRC:.tex=.ps)
+PDFFILES=$(MAINTEXSRC:.tex=.pdf)
+HTMLFILE=$(MAINTEXSRC:.tex=.html)
+AUXFILE=$(MAINTEXSRC:.tex=.aux)
+BBLFILE=$(MAINTEXSRC:.tex=.bbl)
+INDFILE=$(MAINTEXSRC:.tex=.ind)
+IDXFILE=$(MAINTEXSRC:.tex=.idx)
+BLGFILE=$(MAINTEXSRC:.tex=.blg)
+ILGFILE=$(MAINTEXSRC:.tex=.ilg)
+LOGFILE=$(MAINTEXSRC:.tex=.log)
+TOCFILE=$(MAINTEXSRC:.tex=.toc)
+LOFFILE=$(MAINTEXSRC:.tex=.lof)
+LOTFILE=$(MAINTEXSRC:.tex=.lot)
+OUTFILE=$(MAINTEXSRC:.tex=.out)
+BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps)
+BUILTGIF=$(OBJSRC:.obj=.gif)
+EPSFILES=$(BUILTEPS) $(EPSSRC)
+
+
+# COMMANDS
+
+ECHO=echo
+LATEX=latex
+BIBTEX=bibtex
+MAKEINDEX=makeindex
+LATEX2HTML=latex2html -split 2 -address $(EMAIL) -html_version 3.0 \
+           -dir html -show_section_numbers
+FIG2PS=fig2dev -L ps
+OBJ2EPS=tgif -print -eps -adobe -o$(FIGDIR)
+SK2EPS=sk2ps
+PS2PDF=ps2pdf
+DVI2PS=dvips
+PSNUP=psnup -pa4 -2
+OBJ2PS=tgif -print -ps -adobe -gray -o$(FIGDIR)
+PS2PPM=gs -q -dNOPAUSE -r300x300 -sDEVICE=ppm -sOutputFile=-
+CROP=pnmcrop
+TRANS=giftrans
+PPM2GIF=ppmtogif
+ARCHIVE=zip
+PRINT=lpr -P$(PRINTER)
+RM=/bin/rm -f
+MV=mv
+CP=/bin/cp
+
+# SUFFIXES
+
+.SUFFIXES:
+.SUFFIXES: .tex
+.SUFFIXES: .dvi .aux .bbl
+.SUFFIXES: .log .blg .ilg
+.SUFFIXES: .ps .pdf
+.SUFFIXES: .idx .ind
+.SUFFIXES: .eps .gif .fig .obj .sk
+
+# DEFAULT RULES
+
+%.aux %.dvi %.bbl %.idx %.ind %.log : %.tex
+	$(LATEX) $<
+	if grep -s "^LaTeX Warning: Citation" $*.log ; \
+	then \
+	    $(BIBTEX) $* ; \
+	    $(LATEX) $< ; \
+	fi
+	if grep -s "^Writing index file" $*.log ; \
+	then \
+	    $(MAKEINDEX) $*.idx ; \
+	    $(LATEX) $< ; \
+	fi
+	while grep -s "Rerun to get cross-references right" $*.log ; \
+	do \
+	    if grep -s "^Writing index file" $*.log ; \
+	    then \
+		$(MAKEINDEX) $*.idx ; \
+	    fi ; \
+	    $(LATEX) $< ;\
+	done
+
+
+%.gif: %.obj
+	$(OBJ2PS) $<
+	$(PS2PPM) $(FIGDIR)/$*.ps -dBATCH | $(CROP) | $(PPM2GIF) > $(FIGDIR)/$*.gif
+	$(TRANS) -t '#ffffff' $(FIGDIR)/$*.gif > $(FIGDIR)/tmp.gif
+	$(TRANS) -B '#bfbfbf' $(FIGDIR)/tmp.gif > $(FIGDIR)/$*.gif
+	$(RM) $(FIGDIR)/tmp.gif
+
+%.pdf: %.ps
+	$(PS2PDF) $< $@
+
+%.ps: %.dvi
+	$(DVI2PS) -o $@ $<
+
+%.ps: %.fig
+	$(FIG2PS) $< > $@
+
+%.eps: %.obj
+	$(OBJ2EPS) $<
+
+%.eps: %.sk
+	$(SK2EPS) $< $@
+
+$(DVIFILE) :	$(SOURCES) $(EPSFILES)
+
+archive :	$(SOURCES)
+	$(ARCHIVE) $(PROJARCHIVE) $(SOURCES)
+
+print :		$(PSFILES)
+	$(PRINT) $(PSFILES)
+
+littleprint :	$(PSFILES)
+	$(PSNUP) $(PSFILES) | $(PRINT)
+
+gifs :		$(BUILTGIF)
+
+html :		html/$(HTMLFILE)
+html/$(HTMLFILE) :	$(SOURCES) $(AUXFILE) $(PSFILES) $(EPSFILES)
+	-if [ -n "$(FIGDIR)" -a "$(FIGDIR)" != "." ] ; \
+	then \
+		$(CP) $(EPSFILES) . ; \
+	fi
+	$(LATEX2HTML) $(MAINTEXSRC)
+	$(CP) $(PSFILES) html
+	-if [ -n "$(FIGDIR)" -a "$(FIGDIR)" != "." ] ; \
+	then \
+		$(RM) *.eps ; \
+	fi
+
+clean :
+	$(RM) $(DVIFILE) $(BUILTGIF) $(LOGFILE) $(AUXFILE) \
+	    $(BLGFILE) $(BBLFILE) $(BUILTEPS) $(INDFILE) $(IDXFILE) \
+	    $(ILGFILE) $(TOCFILE) $(LOFFILE) $(LOTFILE) $(OUTFILE)
+	$(RM) -r html
+
+clobber: clean
+	$(RM) $(PDFFILES) $(PSFILES)
