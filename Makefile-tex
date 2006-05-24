@@ -45,6 +45,8 @@ DVI2PS=dvips
 PSNUP=psnup -pa4 -2
 OBJ2PS=tgif -print -ps -adobe -gray -o$(FIGDIR)
 PS2PPM=gs -q -dNOPAUSE -r300x300 -sDEVICE=ppm -sOutputFile=-
+DJPEG=djpeg
+PNMTOPS=pnmtops -dpi 300 -equalpixels -noturn -rle
 CROP=pnmcrop
 TRANS=giftrans
 PPM2GIF=ppmtogif
@@ -62,7 +64,7 @@ CP=/bin/cp
 .SUFFIXES: .log .blg .ilg
 .SUFFIXES: .ps .pdf
 .SUFFIXES: .idx .ind
-.SUFFIXES: .eps .gif .fig .obj .sk
+.SUFFIXES: .eps .gif .fig .obj .sk .ppm .jpg
 
 # DEFAULT RULES
 
@@ -95,9 +97,6 @@ CP=/bin/cp
 	$(TRANS) -B '#bfbfbf' $(FIGDIR)/tmp.gif > $(FIGDIR)/$*.gif
 	$(RM) $(FIGDIR)/tmp.gif
 
-%.pdf: %.eps
-	$(PS2PDF) $< $@
-
 %.pdf: %.ps
 	$(PS2PDF) $< $@
 
@@ -112,6 +111,12 @@ CP=/bin/cp
 
 %.eps: %.sk
 	$(SK2EPS) $< $@
+
+%.ppm: %.jpg
+	$(DJPEG) $< > $@
+
+%.eps: %.ppm
+	$(PNMTOPS) $< > $@
 
 $(DVIFILE) :	$(SOURCES) $(EPSFILES)
 
