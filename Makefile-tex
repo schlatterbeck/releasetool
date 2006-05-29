@@ -8,7 +8,8 @@
 ##
 
 PROJARCHIVE=$(PROJECT).zip
-SOURCES=$(MAINTEXSRC) $(TEXSRC) $(OBJSRC) $(EPSSRC) $(BIBSRC) $(SKSRC)
+SOURCES=$(MAINTEXSRC) $(TEXSRC) $(OBJSRC) $(EPSSRC) $(BIBSRC) $(SKSRC) \
+    $(PNGSRC) $(JPGSRC)
 DVIFILE=$(MAINTEXSRC:.tex=.dvi)
 PSFILES=$(MAINTEXSRC:.tex=.ps)
 PDFFILES=$(MAINTEXSRC:.tex=.pdf)
@@ -24,7 +25,8 @@ TOCFILE=$(MAINTEXSRC:.tex=.toc)
 LOFFILE=$(MAINTEXSRC:.tex=.lof)
 LOTFILE=$(MAINTEXSRC:.tex=.lot)
 OUTFILE=$(MAINTEXSRC:.tex=.out)
-BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps)
+BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps) \
+    $(JPGSRC:.jpg=.eps) $(DATASRC:.data=.eps)
 BUILTGIF=$(OBJSRC:.obj=.gif)
 EPSFILES=$(BUILTEPS) $(EPSSRC)
 
@@ -46,6 +48,7 @@ PSNUP=psnup -pa4 -2
 OBJ2PS=tgif -print -ps -adobe -gray -o$(FIGDIR)
 PS2PPM=gs -q -dNOPAUSE -r300x300 -sDEVICE=ppm -sOutputFile=-
 DJPEG=djpeg
+PNGTOPPM=pngtopnm -mix -background white
 PNMTOPS=pnmtops -dpi 300 -equalpixels -noturn -rle
 CROP=pnmcrop
 TRANS=giftrans
@@ -64,7 +67,7 @@ CP=/bin/cp
 .SUFFIXES: .log .blg .ilg
 .SUFFIXES: .ps .pdf
 .SUFFIXES: .idx .ind
-.SUFFIXES: .eps .gif .fig .obj .sk .ppm .jpg
+.SUFFIXES: .eps .gif .fig .obj .sk .ppm .jpg .png
 
 # DEFAULT RULES
 
@@ -114,6 +117,9 @@ CP=/bin/cp
 
 %.ppm: %.jpg
 	$(DJPEG) $< > $@
+
+%.ppm: %.png
+	$(PNGTOPPM) $< > $@
 
 %.eps: %.ppm
 	$(PNMTOPS) $< > $@
