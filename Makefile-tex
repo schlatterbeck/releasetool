@@ -12,7 +12,9 @@ SOURCES=$(MAINTEXSRC) $(TEXSRC) $(OBJSRC) $(EPSSRC) $(BIBSRC) $(SKSRC) \
     $(PNGSRC) $(JPGSRC)
 DVIFILE=$(MAINTEXSRC:.tex=.dvi)
 PSFILES=$(MAINTEXSRC:.tex=.ps)
+PS4UPFILES=$(MAINTEXSRC:.tex=.4.ps)
 PDFFILES=$(MAINTEXSRC:.tex=.pdf)
+PDF4UPFILES=$(MAINTEXSRC:.tex=.4.pdf)
 HTMLFILE=$(MAINTEXSRC:.tex=.html)
 AUXFILE=$(MAINTEXSRC:.tex=.aux)
 BBLFILE=$(MAINTEXSRC:.tex=.bbl)
@@ -106,6 +108,9 @@ CP=/bin/cp
 %.ps: %.dvi
 	$(DVI2PS) -o $@ $<
 
+%.4.ps: %.ps
+	psnup -l -pa4 -W297.63779500 -H420.94488 -b5mm -4 $< > $@
+
 %.ps: %.fig
 	$(FIG2PS) $< > $@
 
@@ -157,4 +162,4 @@ clean :
 	$(RM) -r html
 
 clobber: clean
-	$(RM) $(PDFFILES) $(PSFILES)
+	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES)
