@@ -28,7 +28,7 @@ LOFFILE=$(MAINTEXSRC:.tex=.lof)
 LOTFILE=$(MAINTEXSRC:.tex=.lot)
 OUTFILE=$(MAINTEXSRC:.tex=.out)
 BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps) \
-    $(JPGSRC:.jpg=.eps) $(DATASRC:.data=.eps)
+    $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)
 BUILTGIF=$(OBJSRC:.obj=.gif)
 EPSFILES=$(BUILTEPS) $(EPSSRC)
 
@@ -60,6 +60,8 @@ PRINT=lpr -P$(PRINTER)
 RM=/bin/rm -f
 MV=mv
 CP=/bin/cp
+#SVGPRINT=sodipodi -z # Doesn't create bounding box
+SVGPRINT=inkscape -z
 
 # SUFFIXES
 
@@ -69,7 +71,7 @@ CP=/bin/cp
 .SUFFIXES: .log .blg .ilg
 .SUFFIXES: .ps .pdf
 .SUFFIXES: .idx .ind
-.SUFFIXES: .eps .gif .fig .obj .sk .ppm .jpg .png
+.SUFFIXES: .eps .gif .fig .obj .sk .ppm .jpg .png .svg
 
 # DEFAULT RULES
 
@@ -128,6 +130,9 @@ CP=/bin/cp
 
 %.eps: %.ppm
 	$(PNMTOPS) $< > $@
+
+%.eps: %.svg
+	$(SVGPRINT) --export-dpi=300 --export-eps='>$@' $< 
 
 $(DVIFILE) :	$(SOURCES) $(EPSFILES)
 
