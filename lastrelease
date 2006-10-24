@@ -4,7 +4,8 @@ import sys
 import re
 import os
 
-url_re = 'tags/%s_([0-9]+_[0-9]+)$'
+tag_re   = 'tags/(release|V)_[^_]*_?([0-9]+_[0-9]+)/%s$'
+trunk_re = 'trunk/%s$'
 
 def get_popen (cmd) :
     """ return stripped stdout from external command """
@@ -20,12 +21,16 @@ def up_to_date_rev (name) :
     """
     
     url = get_popen ("svn info | grep '^URL'")
-    rev = get_popen ("svnversion .")
-    rgx = re.compile (url_re % name)
+    rev = get_popen ("svnversion .").rstrip ("S")
+    rgx = re.compile (tag_re % name)
     m   = rgx.search (url)
     if m and not rev.endswith ("M") :
-        return "V_%s (%s)" % (m.group (1), rev)
-    return "NO_TAG (%s)" % rev
+        return "V_%s (%s)" % (m.group (2), rev)
+    rgx = re.compile (trunk_re % name)
+    m   = rgx.search (url)
+    if m and not rev.endswith ("M") :
+        return "NO_TAG (%s)" % rev
+    return "NO_TAG"
 # end def up_to_date_rev
 
 if __name__ == "__main__" :
