@@ -4,8 +4,8 @@ import sys
 import re
 import os
 
-tag_re   = 'tags/((release|V)_[^_]*_?([0-9]+_[0-9]+))/%s$'
-trunk_re = 'trunk/%s$'
+tag_re   = 'tags/((release|V)_[^_]*_?([0-9]+_[0-9]+))'
+trunk_re = 'trunk'
 
 def get_popen (cmd) :
     """ return stripped stdout from external command """
@@ -20,23 +20,29 @@ def up_to_date_rev (name) :
        revision and X and Y are major an minor number
     """
     
-    url = get_popen ("svn info | grep '^URL'")
-    rev = get_popen ("svnversion .").rstrip ("S")
-    rgx = re.compile (tag_re % name)
-    m   = rgx.search (url)
+    url        = get_popen ("svn info | grep '^URL'")
+    rev        = get_popen ("svnversion .").rstrip ("S")
+    suffix     = '$'
+    if name :
+        suffix = '/%s$' % name
+    tag_rgx    = re.compile   (tag_re   + suffix)
+    trunk_rgx  = re.compile (trunk_re + suffix)
+    m   = tag_rgx.search (url)
     if m :
         if rev.endswith ("M") :
             return "NO_TAG (%s: %s)" % (m.group (1), rev)
         return "V_%s (%s)" % (m.group (3), rev)
-    rgx = re.compile (trunk_re % name)
-    m   = rgx.search (url)
+    m   = trunk_rgx.search (url)
     if m :
         return "NO_TAG (%s)" % rev
     return "NO_TAG"
 # end def up_to_date_rev
 
 if __name__ == "__main__" :
-    if len (sys.argv) != 2 :
-        print >> sys.stderr, "Usage: %s <project-name>" % sys.argv [0]
+    if len (sys.argv) > 2 :
+        print >> sys.stderr, "Usage: %s [project-name]" % sys.argv [0]
         sys.exit (1)
-    print up_to_date_rev (sys.argv [1])
+    project = ''
+    if len (sys.argv) == 2 :
+        project = sys.argv [1]
+    print up_to_date_rev (project)
