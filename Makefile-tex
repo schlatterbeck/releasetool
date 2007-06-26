@@ -61,7 +61,7 @@ RM=/bin/rm -f
 MV=mv
 CP=/bin/cp
 #SVGPRINT=sodipodi -z # Doesn't create bounding box
-SVGPRINT=inkscape -z
+SVGPRINT=inkscape
 
 # SUFFIXES
 
@@ -132,7 +132,7 @@ SVGPRINT=inkscape -z
 	$(PNMTOPS) $< > $@
 
 %.eps: %.svg
-	$(SVGPRINT) --export-dpi=300 --export-eps='>$@' $< 
+	$(SVGPRINT) -E '$@' $< 
 
 $(DVIFILE) :	$(SOURCES) $(EPSFILES)
 
