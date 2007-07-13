@@ -3,6 +3,7 @@
 import sys
 import re
 import os
+from optparse import OptionParser
 
 tag_re   = 'tags/((release|V)_[^_]*_?([0-9]+_[0-9]+))'
 trunk_re = 'trunk'
@@ -15,7 +16,7 @@ def get_popen (cmd) :
     return ret
 # end def get_popen
 
-def up_to_date_rev (name) :
+def up_to_date_rev (name, do_notag = True) :
     """convention: A revision is name_X_Y where name is the released
        revision and X and Y are major an minor number
     """
@@ -23,26 +24,39 @@ def up_to_date_rev (name) :
     url        = get_popen ("svn info | grep '^URL'")
     rev        = get_popen ("svnversion .").rstrip ("S")
     suffix     = '$'
+    notag      = 'NO_TAG_'
+    if not do_notag :
+        notag = ''
     if name :
         suffix = '/%s$' % name
-    tag_rgx    = re.compile   (tag_re   + suffix)
+    tag_rgx    = re.compile (tag_re   + suffix)
     trunk_rgx  = re.compile (trunk_re + suffix)
     m   = tag_rgx.search (url)
     if m :
         if rev.endswith ("M") :
-            return "NO_TAG (%s: %s)" % (m.group (1), rev)
-        return "V_%s (%s)" % (m.group (3), rev)
+            return "%s%s:%s" % (notag, m.group (1), rev)
+        return "V_%s_%s" % (m.group (3), rev)
     m   = trunk_rgx.search (url)
     if m :
-        return "NO_TAG (%s)" % rev
+        return "%s%s" % (notag, rev)
     return "NO_TAG"
 # end def up_to_date_rev
 
 if __name__ == "__main__" :
-    if len (sys.argv) > 2 :
-        print >> sys.stderr, "Usage: %s [project-name]" % sys.argv [0]
-        sys.exit (1)
+    usage  = "%prog [-n --no-notag] [project-name]"
+    parser = OptionParser (usage = usage)
+    parser.add_option \
+        ( "-n", "--no-notag"
+        , dest    = "do_notag"
+        , help    = 'Use "NOTAG" if not an svn tag'
+        , default = True
+        , action  = "store_false"
+        )
+    (options, args) = parser.parse_args ()
+    if len (args) > 1 :
+        parser.print_help (sys.stderr)
+        sys.exit (23)
     project = ''
-    if len (sys.argv) == 2 :
-        project = sys.argv [1]
-    print up_to_date_rev (project)
+    if len (args) == 1 :
+        project = args [0]
+    print up_to_date_rev (project, options.do_notag)
