@@ -62,6 +62,7 @@ MV=mv
 CP=/bin/cp
 #SVGPRINT=sodipodi -z # Doesn't create bounding box
 SVGPRINT=inkscape
+TXT2LATEX=rst2newlatex
 
 # SUFFIXES
 
@@ -134,6 +135,9 @@ SVGPRINT=inkscape
 %.eps: %.svg
 	$(SVGPRINT) -E '$@' $< 
 
+%.tex: %.txt
+	$(TXT2LATEX) $< > $@
+
 $(DVIFILE) :	$(SOURCES) $(EPSFILES)
 
 archive :	$(SOURCES)
@@ -167,4 +171,4 @@ clean :
 	$(RM) -r html
 
 clobber: clean
-	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES)
+	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES) $(CLOBBER)
