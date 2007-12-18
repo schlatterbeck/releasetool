@@ -11,6 +11,9 @@ for line in sys.stdin :
         state = 'changelog'
     if line.startswith ('Version') and state == 'changelog' :
         state = 'start_notes'
+        if sys.argv [1] == 'sf-release-focus' :
+            rf = line.split (':') [1].strip ()
+            print rf
         continue
     if not line and state == 'notes' :
         state = 'start_changes'

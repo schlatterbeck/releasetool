@@ -16,12 +16,18 @@ upload: all ${CHANGES} ${NOTES} dist
 	    --package ${PACKAGE} --release ${LASTRELASE} --notes ${NOTES} \
 	    --changelog ${CHANGES} dist/*
 
-FOCUS?=Major feature enhancements
+FOCUS:=$(shell ${MKCHLOG} sf-release-focus < README)
+URL:=$(shell python setup.py --url)
+LICENSE:=OSI Approved :: $(shell python setup.py --license)
+FRESHMEAT=freshmeat-submit
+#FRESHMEAT=cat
 
 announce: all ${CHANGES} ${NOTES} dist
-	( echo "Project: ${PROJECT}"    \
-	; echo "Version: ${LASTRELASE}" \
-	; echo "Release-Focus: ${FOCUS}" \
-	; echo ""                       \
-	; cat ${NOTES}                  \
-	) | freshmeat-submit
+	 ( echo "Project: ${PROJECT}"    \
+	 ; echo "Version: ${LASTRELASE}" \
+	 ; echo "Release-Focus: ${FOCUS}" \
+	 ; if [ -n "${URL}"     ] ; then echo "Home-Page-URL: ${URL}" ; fi \
+	 ; if [ -n "${LICENSE}" ] ; then echo "License: ${LICENSE}"   ; fi \
+	 ; echo ""                       \
+	 ; cat ${NOTES}                  \
+	 ) | ${FRESHMEAT}
