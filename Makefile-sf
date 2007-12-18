@@ -9,9 +9,19 @@ ${NOTES}: ${README}
 ${CHANGES}: ${README}
 	${MKCHLOG} ${CHANGES} < README > $@
 
-upload: all ${CHANGES} ${NOTES}
-	echo -n Password:
-	read pw
+upload: all ${CHANGES} ${NOTES} dist
+	@echo -n Password:
+	@read pw &&                                                       \
 	copher.pl --user ${USERNAME} --password $$pw --project ${PROJECT} \
 	    --package ${PACKAGE} --release ${LASTRELASE} --notes ${NOTES} \
-	    --changelog ${CHANGES}
+	    --changelog ${CHANGES} dist/*
+
+FOCUS?=Major feature enhancements
+
+announce: all ${CHANGES} ${NOTES} dist
+	( echo "Project: ${PROJECT}"    \
+	; echo "Version: ${LASTRELASE}" \
+	; echo "Release-Focus: ${FOCUS}" \
+	; echo ""                       \
+	; cat ${NOTES}                  \
+	) | freshmeat-submit
