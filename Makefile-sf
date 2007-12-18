@@ -1,0 +1,17 @@
+MKCHLOG=../make/mkchlog.py
+README=README
+NOTES=notes
+CHANGES=changes
+
+${NOTES}: ${README}
+	${MKCHLOG} ${NOTES} < README > $@
+
+${CHANGES}: ${README}
+	${MKCHLOG} ${CHANGES} < README > $@
+
+upload: all ${CHANGES} ${NOTES}
+	echo -n Password:
+	read pw
+	copher.pl --user ${USERNAME} --password $$pw --project ${PROJECT} \
+	    --package ${PACKAGE} --release ${LASTRELASE} --notes ${NOTES} \
+	    --changelog ${CHANGES}

@@ -63,6 +63,7 @@ CP=/bin/cp
 #SVGPRINT=sodipodi -z # Doesn't create bounding box
 SVGPRINT=inkscape
 TXT2LATEX=rst2newlatex
+TXT2HTML=rst2html
 
 # SUFFIXES
 
@@ -137,6 +138,9 @@ TXT2LATEX=rst2newlatex
 
 %.tex: %.txt
 	$(TXT2LATEX) $< > $@
+
+%.html: %.txt
+	$(TXT2HTML) $< > $@
 
 $(DVIFILE) :	$(SOURCES) $(EPSFILES)
 
