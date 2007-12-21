@@ -3,31 +3,32 @@ README=README
 NOTES=notes
 CHANGES=changes
 
-${NOTES}: ${README}
-	${MKCHLOG} ${NOTES} < README > $@
+$(NOTES): $(README)
+	$(MKCHLOG) $(NOTES) < README > $@
 
-${CHANGES}: ${README}
-	${MKCHLOG} ${CHANGES} < README > $@
+$(CHANGES): $(README)
+	$(MKCHLOG) $(CHANGES) < README > $@
 
-upload: all ${CHANGES} ${NOTES} dist
+upload: all $(CHANGES) $(NOTES) dist
+	@echo Preparing Release $(LASTRELEASE)
 	@echo -n Password:
-	@read pw &&                                                       \
-	copher.pl --user ${USERNAME} --password $$pw --project ${PROJECT} \
-	    --package ${PACKAGE} --release ${LASTRELASE} --notes ${NOTES} \
-	    --changelog ${CHANGES} dist/*
+	@read -s pw &&                                                     \
+	copher.pl --user $(USERNAME) --password $$pw --project $(PROJECT) \
+	    --package $(PACKAGE) --release $(LASTRELEASE) --notes $(NOTES) \
+	    --changelog $(CHANGES) dist/*
 
-FOCUS:=$(shell ${MKCHLOG} sf-release-focus < README)
+FOCUS:=$(shell $(MKCHLOG) sf-release-focus < README)
 URL:=$(shell python setup.py --url)
-LICENSE:=OSI Approved :: $(shell python setup.py --license)
+LICENSE:=$(shell python setup.py --license)
 FRESHMEAT=freshmeat-submit
 #FRESHMEAT=cat
 
-announce: all ${CHANGES} ${NOTES} dist
-	 ( echo "Project: ${PROJECT}"    \
-	 ; echo "Version: ${LASTRELASE}" \
-	 ; echo "Release-Focus: ${FOCUS}" \
-	 ; if [ -n "${URL}"     ] ; then echo "Home-Page-URL: ${URL}" ; fi \
-	 ; if [ -n "${LICENSE}" ] ; then echo "License: ${LICENSE}"   ; fi \
+announce: all $(CHANGES) $(NOTES) dist
+	 ( echo "Project: $(PROJECT)"    \
+	 ; echo "Version: $(LASTRELASE)" \
+	 ; echo "Release-Focus: $(FOCUS)" \
+	 ; if [ -n "$(URL)"     ] ; then echo "Home-Page-URL: $(URL)" ; fi \
+	 ; if [ -n "$(LICENSE)" ] ; then echo "License: $(LICENSE)"   ; fi \
 	 ; echo ""                       \
-	 ; cat ${NOTES}                  \
-	 ) | ${FRESHMEAT}
+	 ; cat $(NOTES)                  \
+	 ) | $(FRESHMEAT)
