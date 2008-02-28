@@ -3,7 +3,6 @@
 import sys
 import re
 
-
 state = 'start'
 for line in sys.stdin :
     line = line.rstrip ()
@@ -15,9 +14,12 @@ for line in sys.stdin :
             rf = line.split (':') [1].strip ()
             print rf
         continue
-    if not line and state == 'notes' :
-        state = 'start_changes'
-        continue
+    if not line :
+        if state == 'notes' :
+            state = 'start_changes'
+            continue
+        elif state == 'changes' :
+            break
     if line and state.startswith ('start_') :
         state = state [6:]
     if sys.argv [1] == state :
