@@ -25,7 +25,7 @@ FRESHMEAT=freshmeat-submit
 
 announce: all $(CHANGES) $(NOTES) dist
 	 ( echo "Project: $(PROJECT)"    \
-	 ; echo "Version: $(LASTRELASE)" \
+	 ; echo "Version: $(LASTRELEASE)" \
 	 ; echo "Release-Focus: $(FOCUS)" \
 	 ; if [ -n "$(URL)"     ] ; then echo "Home-Page-URL: $(URL)" ; fi \
 	 ; if [ -n "$(LICENSE)" ] ; then echo "License: $(LICENSE)"   ; fi \
