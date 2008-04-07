@@ -19,7 +19,7 @@ upload: all $(CHANGES) $(NOTES) dist
 
 FOCUS:=$(shell $(MKCHLOG) sf-release-focus < README)
 URL:=$(shell python setup.py --url)
-LICENSE:=$(shell python setup.py --license)
+LICENSE:=$(shell python setup.py --license | sed 's/Library or //')
 FRESHMEAT=freshmeat-submit
 #FRESHMEAT=cat
 
@@ -32,3 +32,6 @@ announce: all $(CHANGES) $(NOTES) dist
 	 ; echo ""                       \
 	 ; cat $(NOTES)                  \
 	 ) | $(FRESHMEAT)
+
+license:
+	@echo "$(LICENSE)"
