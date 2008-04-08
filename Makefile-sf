@@ -2,6 +2,7 @@ MKCHLOG=../make/mkchlog.py
 README=README
 NOTES=notes
 CHANGES=changes
+RELEASE:=$(shell echo $(LASTRELEASE) | sed -e 's/^V_//' -e 's/_/./g')
 
 $(NOTES): $(README)
 	$(MKCHLOG) $(NOTES) < README > $@
@@ -10,11 +11,11 @@ $(CHANGES): $(README)
 	$(MKCHLOG) $(CHANGES) < README > $@
 
 upload: all $(CHANGES) $(NOTES) dist
-	@echo Preparing Release $(LASTRELEASE)
+	@echo Preparing Release $(RELEASE)
 	@echo -n Password:
 	@read -s pw &&                                                     \
 	copher.pl --user $(USERNAME) --password $$pw --project $(PROJECT) \
-	    --package $(PACKAGE) --release $(LASTRELEASE) --notes $(NOTES) \
+	    --package $(PACKAGE) --release $(RELEASE) --notes $(NOTES) \
 	    --changelog $(CHANGES) dist/*
 
 FOCUS:=$(shell $(MKCHLOG) sf-release-focus < README)
@@ -25,7 +26,7 @@ FRESHMEAT=freshmeat-submit
 
 announce: all $(CHANGES) $(NOTES) dist
 	 ( echo "Project: $(PROJECT)"    \
-	 ; echo "Version: $(LASTRELEASE)" \
+	 ; echo "Version: $(RELEASE)" \
 	 ; echo "Release-Focus: $(FOCUS)" \
 	 ; if [ -n "$(URL)"     ] ; then echo "Home-Page-URL: $(URL)" ; fi \
 	 ; if [ -n "$(LICENSE)" ] ; then echo "License: $(LICENSE)"   ; fi \
@@ -35,3 +36,6 @@ announce: all $(CHANGES) $(NOTES) dist
 
 license:
 	@echo "$(LICENSE)"
+
+version:
+	@echo "$(RELEASE)"
