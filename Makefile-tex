@@ -63,6 +63,7 @@ CP=/bin/cp
 #SVGPRINT=sodipodi -z # Doesn't create bounding box
 SVGPRINT=inkscape
 TXT2LATEX=rst2newlatex
+#TXT2LATEX_OPT=
 TXT2HTML=rst2html
 
 # SUFFIXES
@@ -137,7 +138,7 @@ TXT2HTML=rst2html
 	$(SVGPRINT) -E '$@' $< 
 
 %.tex: %.txt
-	$(TXT2LATEX) $< > $@
+	$(TXT2LATEX) $(TXT2LATEX_OPT) $< > $@
 
 %.html: %.txt
 	$(TXT2HTML) $< > $@
