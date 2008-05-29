@@ -19,9 +19,11 @@ $(CHANGES): $(README)
 
 upload_homepage: all
 	scp README.html $(USERNAME)@$(HOSTNAME):$(PROJECTDIR)/index.html
+	touch upload_homepage
 
 announce_pypi: all
 	python setup.py register
+	touch announce_pypi
 
 upload: all $(CHANGES) $(NOTES) dist
 	@echo Preparing Release $(RELEASE)
@@ -30,6 +32,7 @@ upload: all $(CHANGES) $(NOTES) dist
 	copher.pl --user $(USERNAME) --password $$pw --project $(PROJECT) \
 	    --package $(PACKAGE) --release $(RELEASE) --notes $(NOTES) \
 	    --changelog $(CHANGES) dist/*
+	touch upload
 
 FOCUS:=$(shell $(MKCHLOG) sf-release-focus < README)
 URL:=$(shell python setup.py --url)
@@ -46,6 +49,7 @@ announce: all $(CHANGES) $(NOTES) dist
 	 ; echo ""                       \
 	 ; cat $(NOTES)                  \
 	 ) | $(FRESHMEAT)
+	 touch announce
 
 license:
 	@echo "$(LICENSE)"
