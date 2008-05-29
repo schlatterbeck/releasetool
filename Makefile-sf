@@ -54,4 +54,4 @@ version:
 	@echo "$(RELEASE)"
 
 $(VERSION): $(SRC)
-	echo 'VERSION="$(LASTRELEASE)"' | sed -e 's/_/./g' -e 's/^V\.//' > $@
+	echo 'VERSION="$(LASTRELEASE)"' | sed -e 's/_/./g' -e 's/V\.//' > $@
