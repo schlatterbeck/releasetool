@@ -3,12 +3,25 @@ README=README
 NOTES=notes
 CHANGES=changes
 RELEASE:=$(shell echo $(LASTRELEASE) | sed -e 's/^V_//' -e 's/_/./g')
+CDUP:=$(shell svn info | grep '^URL:' | sed -e 's/trunk.*$$//' \
+        -e 's/branches.*$$//' -e 's/tags.*$$//' -e 's+.*svn/own/projects/++' \
+	-e 's+[^/]*++g' -e 's+/+/..+g' -e 's/^/../')
+CSS:=$(CDUP)/content/html/stylesheets/default.css
+
+README.html: $(README) $(CSS)
+	rst2html --stylesheet=$(CSS) $< > $@
 
 $(NOTES): $(README)
 	$(MKCHLOG) $(NOTES) < README > $@
 
 $(CHANGES): $(README)
 	$(MKCHLOG) $(CHANGES) < README > $@
+
+upload_homepage: all
+	scp README.html $(USERNAME)@$(HOSTNAME):$(PROJECTDIR)/index.html
+
+announce_pypi: all
+	python setup.py register
 
 upload: all $(CHANGES) $(NOTES) dist
 	@echo Preparing Release $(RELEASE)
@@ -39,3 +52,6 @@ license:
 
 version:
 	@echo "$(RELEASE)"
+
+$(VERSION): $(SRC)
+	echo 'VERSION="$(LASTRELEASE)"' | sed -e 's/_/./g' -e 's/^V\.//' > $@
