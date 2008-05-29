@@ -7,6 +7,7 @@ CDUP:=$(shell svn info | grep '^URL:' | sed -e 's/trunk.*$$//' \
         -e 's/branches.*$$//' -e 's/tags.*$$//' -e 's+.*svn/own/projects/++' \
 	-e 's+[^/]*++g' -e 's+/+/..+g' -e 's/^/../')
 CSS:=$(CDUP)/content/html/stylesheets/default.css
+VERSIONSED=sed -e 's/_/./g' -e 's/V\.//'
 
 README.html: $(README) $(CSS)
 	rst2html --stylesheet=$(CSS) $< > $@
@@ -57,5 +58,8 @@ license:
 version:
 	@echo "$(RELEASE)"
 
-$(VERSION): $(SRC)
-	echo 'VERSION="$(LASTRELEASE)"' | sed -e 's/_/./g' -e 's/V\.//' > $@
+$(VERSIONPY): $(SRC)
+	echo 'VERSION="$(LASTRELEASE)"' | $(VERSIONSED) > $@
+
+$(VERSIONH): $(SRC)
+	echo '#define VERSION "$(LASTRELEASE)"' | $(VERSIONSED) > $@
