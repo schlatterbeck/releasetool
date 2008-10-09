@@ -143,15 +143,17 @@ TXT2HTML=rst2html
 	$(TXT2LATEX) $(TXT2LATEX_OPT) $< > $@
 
 %.rev: %.txt
-	svn info $< | grep "^Last Changed"   |        \
-	    sed -e 's/^Last Changed /:/'              \
-		-e 's/\(:Author:\).*$$/\1 ${AUTHOR}/' \
-		-e 's/:Rev:/:Revision:/'              \
-		-e 's/\(:Date:[^(]*\)[(].*$$/\1/'     \
+	MODIFIED=$$(if [ -n "$$(svn status $<)" ]; then echo "(modified)"; fi);\
+	svn info $< | grep "^Last Changed"   |                               \
+	    sed -e 's/^Last Changed /:/'                                     \
+		-e 's/\(:Author:\).*$$/\1 ${AUTHOR}/'                        \
+		-e 's/:Rev:\(.*\)$$/:Revision:\1 '"$$MODIFIED"/              \
+		-e 's/\(:Date:[^(]*\)[(].*$$/\1/'                            \
 	    > $@
 
 %.grev: %.rev
-	sed -e 's/:Date:/:Datum:/' -e 's/:Author:/:Autor:/' < $< > $@
+	sed -e 's/:Date:/:Datum:/' -e 's/:Author:/:Autor:/'                  \
+	    -e 's/(modified)/(geändert)/' < $< > $@
 
 %.html: %.txt
 	$(TXT2HTML) $< > $@
