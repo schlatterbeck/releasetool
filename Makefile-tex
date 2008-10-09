@@ -27,6 +27,7 @@ TOCFILE=$(MAINTEXSRC:.tex=.toc)
 LOFFILE=$(MAINTEXSRC:.tex=.lof)
 LOTFILE=$(MAINTEXSRC:.tex=.lot)
 OUTFILE=$(MAINTEXSRC:.tex=.out)
+REVFILES=$(MAINTEXSRC:.tex=.rev) $(MAINTEXSRC:.tex=.grev)
 BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps) \
     $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)
 BUILTGIF=$(OBJSRC:.obj=.gif)
@@ -51,7 +52,8 @@ OBJ2PS=tgif -print -ps -adobe -gray -o$(FIGDIR)
 PS2PPM=gs -q -dNOPAUSE -r300x300 -sDEVICE=ppm -sOutputFile=-
 DJPEG=djpeg
 PNGTOPPM=pngtopnm -mix -background white
-PNMTOPS=pnmtops -dpi 300 -equalpixels -noturn -rle
+PNMTOPS=pnmtops
+PNMTOPS_OPT=-dpi 300 -equalpixels -noturn -rle
 CROP=pnmcrop
 TRANS=giftrans
 PPM2GIF=ppmtogif
@@ -132,13 +134,24 @@ TXT2HTML=rst2html
 	$(PNGTOPPM) $< > $@
 
 %.eps: %.ppm
-	$(PNMTOPS) $< > $@
+	$(PNMTOPS) $(PNMTOPS_OPT) $< > $@
 
 %.eps: %.svg
 	$(SVGPRINT) -E '$@' $< 
 
-%.tex: %.txt
+%.tex: %.txt %.rev %.grev
 	$(TXT2LATEX) $(TXT2LATEX_OPT) $< > $@
+
+%.rev: %.txt
+	svn info $< | grep "^Last Changed"   |        \
+	    sed -e 's/^Last Changed /:/'              \
+		-e 's/\(:Author:\).*$$/\1 ${AUTHOR}/' \
+		-e 's/:Rev:/:Revision:/'              \
+		-e 's/\(:Date:[^(]*\)[(].*$$/\1/'     \
+	    > $@
+
+%.grev: %.rev
+	sed -e 's/:Date:/:Datum:/' -e 's/:Author:/:Autor:/' < $< > $@
 
 %.html: %.txt
 	$(TXT2HTML) $< > $@
@@ -170,9 +183,10 @@ html/$(HTMLFILE) :	$(SOURCES) $(AUXFILE) $(PSFILES) $(EPSFILES)
 	fi
 
 clean :
-	$(RM) $(DVIFILE) $(BUILTGIF) $(LOGFILE) $(AUXFILE) \
+	$(RM) $(DVIFILE) $(BUILTGIF) $(LOGFILE) $(AUXFILE)          \
 	    $(BLGFILE) $(BBLFILE) $(BUILTEPS) $(INDFILE) $(IDXFILE) \
-	    $(ILGFILE) $(TOCFILE) $(LOFFILE) $(LOTFILE) $(OUTFILE)
+	    $(ILGFILE) $(TOCFILE) $(LOFFILE) $(LOTFILE) $(OUTFILE)  \
+	    $(REVFILES)
 	$(RM) -r html
 
 clobber: clean
