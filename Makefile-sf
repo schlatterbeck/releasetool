@@ -1,12 +1,14 @@
-MKCHLOG=../make/mkchlog.py
 README=README
 NOTES=notes
 CHANGES=changes
 RELEASE:=$(shell echo $(LASTRELEASE) | sed -e 's/^V_//' -e 's/_/./g')
-CDUP:=$(shell svn info | grep '^URL:' | sed -e 's/trunk.*$$//' \
+ifeq (,${CDUP})
+  CDUP:=A$(shell svn info | grep '^URL:' | sed -e 's/trunk.*$$//' \
         -e 's/branches.*$$//' -e 's/tags.*$$//' -e 's+.*svn/own/projects/++' \
 	-e 's+[^/]*++g' -e 's+/+/..+g' -e 's/^/../')
+endif
 CSS:=$(CDUP)/content/html/stylesheets/default.css
+MKCHLOG=${CDUP}/projects/make/mkchlog.py
 VERSIONSED=sed -e 's/_/./g' -e 's/V\.//'
 
 README.html: $(README) $(CSS)
