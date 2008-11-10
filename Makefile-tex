@@ -64,9 +64,9 @@ MV=mv
 CP=/bin/cp
 #SVGPRINT=sodipodi -z # Doesn't create bounding box
 SVGPRINT=inkscape
-TXT2LATEX=rst2newlatex
+TXT2LATEX=rst2newlatex.py
 #TXT2LATEX_OPT=
-TXT2HTML=rst2html
+TXT2HTML=rst2html.py
 
 # SUFFIXES
 
