@@ -190,6 +190,8 @@ clean :
 	    $(ILGFILE) $(TOCFILE) $(LOFFILE) $(LOTFILE) $(OUTFILE)  \
 	    $(REVFILES)
 	$(RM) -r html
+	$(RM) -rf $(CLEAN)
 
 clobber: clean
-	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES) $(CLOBBER)
+	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES)
+	$(RM) -f $(CLOBBER)
