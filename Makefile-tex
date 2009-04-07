@@ -30,8 +30,9 @@ OUTFILE=$(MAINTEXSRC:.tex=.out)
 REVFILES=$(MAINTEXSRC:.tex=.rev) $(MAINTEXSRC:.tex=.grev)
 BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps) \
     $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)
+BUILTPS= $(SVGPSSRC:.svg=.ps)
 BUILTGIF=$(OBJSRC:.obj=.gif)
-EPSFILES=$(BUILTEPS) $(EPSSRC)
+EPSFILES=$(BUILTEPS) $(BUILTPS) $(EPSSRC)
 
 
 # COMMANDS
@@ -64,6 +65,8 @@ MV=mv
 CP=/bin/cp
 #SVGPRINT=sodipodi -z # Doesn't create bounding box
 SVGPRINT=inkscape
+SVG2PDF=inkscape -A
+PDF2PS=pdf2ps
 TXT2LATEX=rst2newlatex.py
 #TXT2LATEX_OPT=
 TXT2HTML=rst2html.py
@@ -74,7 +77,7 @@ TXT2HTML=rst2html.py
 .SUFFIXES: .tex
 .SUFFIXES: .dvi .aux .bbl
 .SUFFIXES: .log .blg .ilg
-.SUFFIXES: .ps .pdf
+.SUFFIXES: .ps .pdf .pdfp
 .SUFFIXES: .idx .ind
 .SUFFIXES: .eps .gif .fig .obj .sk .ppm .jpg .png .svg
 
@@ -136,8 +139,15 @@ TXT2HTML=rst2html.py
 %.eps: %.ppm
 	$(PNMTOPS) $(PNMTOPS_OPT) $< > $@
 
-%.eps: %.svg
+# No transparency
+ %.eps: %.svg
 	$(SVGPRINT) -E '$@' $< 
+
+%.pdfp: *.svg
+	$(SVG2PDF) '$@' $<
+
+%.ps: %.pdfp
+	$(PDF2PS) '$<' '$@'
 
 %.tex: %.txt %.rev %.grev
 	$(TXT2LATEX) $(TXT2LATEX_OPT) $< > $@
@@ -188,7 +198,7 @@ clean :
 	$(RM) $(DVIFILE) $(BUILTGIF) $(LOGFILE) $(AUXFILE)          \
 	    $(BLGFILE) $(BBLFILE) $(BUILTEPS) $(INDFILE) $(IDXFILE) \
 	    $(ILGFILE) $(TOCFILE) $(LOFFILE) $(LOTFILE) $(OUTFILE)  \
-	    $(REVFILES)
+	    $(REVFILES) $(BUILTPS)
 	$(RM) -r html
 	$(RM) -rf $(CLEAN)
 
