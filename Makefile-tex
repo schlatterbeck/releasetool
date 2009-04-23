@@ -29,7 +29,8 @@ LOTFILE=$(MAINTEXSRC:.tex=.lot)
 OUTFILE=$(MAINTEXSRC:.tex=.out)
 REVFILES=$(MAINTEXSRC:.tex=.rev) $(MAINTEXSRC:.tex=.grev)
 BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps) \
-    $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)
+    $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)  \
+    $(PPMSRC:.ppm=.eps) $(PGMSRC:.pgm=.eps) $(PBMSRC:.pbm=.eps)
 BUILTPS= $(SVGPSSRC:.svg=.ps)
 BUILTGIF=$(OBJSRC:.obj=.gif)
 EPSFILES=$(BUILTEPS) $(BUILTPS) $(EPSSRC)
@@ -137,6 +138,12 @@ TXT2HTML=rst2html.py
 	$(PNGTOPPM) $< > $@
 
 %.eps: %.ppm
+	$(PNMTOPS) $(PNMTOPS_OPT) $< > $@
+
+%.eps: %.pgm
+	$(PNMTOPS) $(PNMTOPS_OPT) $< > $@
+
+%.eps: %.pbm
 	$(PNMTOPS) $(PNMTOPS_OPT) $< > $@
 
 # No transparency
