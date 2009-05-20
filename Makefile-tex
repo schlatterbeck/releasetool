@@ -90,12 +90,12 @@ TXT2HTML=rst2html
 	$(LATEX) $<
 	if grep -s "^LaTeX Warning: Citation" $*.log ; \
 	then \
-	    $(BIBTEX) $* ; \
+	    $(BIBTEX) $* && \
 	    $(LATEX) $< ; \
 	fi
 	if grep -s "^Writing index file" $*.log ; \
 	then \
-	    $(MAKEINDEX) $*.idx ; \
+	    $(MAKEINDEX) $*.idx && \
 	    $(LATEX) $< ; \
 	fi
 	while grep -s "Rerun to get cross-references right" $*.log ; \
