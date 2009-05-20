@@ -27,7 +27,8 @@ TOCFILE=$(MAINTEXSRC:.tex=.toc)
 LOFFILE=$(MAINTEXSRC:.tex=.lof)
 LOTFILE=$(MAINTEXSRC:.tex=.lot)
 OUTFILE=$(MAINTEXSRC:.tex=.out)
-REVFILES=$(MAINTEXSRC:.tex=.rev) $(MAINTEXSRC:.tex=.grev)
+REVFILES=$(MAINTEXSRC:.tex=.rev) $(MAINTEXSRC:.tex=.grev) \
+    $(MAINTEXSRC:.tex=.trev)
 BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps) \
     $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)  \
     $(PPMSRC:.ppm=.eps) $(PGMSRC:.pgm=.eps) $(PBMSRC:.pbm=.eps)
@@ -68,9 +69,9 @@ CP=/bin/cp
 SVGPRINT=inkscape
 SVG2PDF=inkscape -A
 PDF2PS=pdf2ps
-TXT2LATEX=rst2newlatex.py
+TXT2LATEX=rst2newlatex
 #TXT2LATEX_OPT=
-TXT2HTML=rst2html.py
+TXT2HTML=rst2html
 
 # SUFFIXES
 
@@ -81,6 +82,7 @@ TXT2HTML=rst2html.py
 .SUFFIXES: .ps .pdf .pdfp
 .SUFFIXES: .idx .ind
 .SUFFIXES: .eps .gif .fig .obj .sk .ppm .jpg .png .svg
+.SUFFIXES: .html
 
 # DEFAULT RULES
 
@@ -172,6 +174,12 @@ TXT2HTML=rst2html.py
 	sed -e 's/:Date:/:Datum:/' -e 's/:Author:/:Autor:/'                  \
 	    -e 's/(modified)/(geändert)/' < $< > $@
 
+%.trev: %.tex
+	MODIFIED=$$(if [ -n "$$(svn status $<)" ]; then echo "(modified) ";fi);\
+	svn info $< | grep 'Last Changed Rev:' | sed 's/$$/'"$$MODIFIED/"    \
+	| sed 's/^Last.*Rev:\s\+\(.*\)$$/\\renewcommand{\\revision}{V.\1}/'  \
+	> $@
+
 %.html: %.txt
 	$(TXT2HTML) $< > $@
 
@@ -188,18 +196,18 @@ littleprint :	$(PSFILES)
 
 gifs :		$(BUILTGIF)
 
-html :		html/$(HTMLFILE)
-html/$(HTMLFILE) :	$(SOURCES) $(AUXFILE) $(PSFILES) $(EPSFILES)
-	-if [ -n "$(FIGDIR)" -a "$(FIGDIR)" != "." ] ; \
-	then \
-		$(CP) $(EPSFILES) . ; \
-	fi
-	$(LATEX2HTML) $(MAINTEXSRC)
-	$(CP) $(PSFILES) html
-	-if [ -n "$(FIGDIR)" -a "$(FIGDIR)" != "." ] ; \
-	then \
-		$(RM) *.eps ; \
-	fi
+#html :		html/$(HTMLFILE)
+#html/$(HTMLFILE) :	$(SOURCES) $(AUXFILE) $(PSFILES) $(EPSFILES)
+#	-if [ -n "$(FIGDIR)" -a "$(FIGDIR)" != "." ] ; \
+#	then \
+#		$(CP) $(EPSFILES) . ; \
+#	fi
+#	$(LATEX2HTML) $(MAINTEXSRC)
+#	$(CP) $(PSFILES) html
+#	-if [ -n "$(FIGDIR)" -a "$(FIGDIR)" != "." ] ; \
+#	then \
+#		$(RM) *.eps ; \
+#	fi
 
 clean :
 	$(RM) $(DVIFILE) $(BUILTGIF) $(LOGFILE) $(AUXFILE)          \
@@ -210,5 +218,5 @@ clean :
 	$(RM) -rf $(CLEAN)
 
 clobber: clean
-	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES)
+	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES) $(HTMLFILE)
 	$(RM) -f $(CLOBBER)
