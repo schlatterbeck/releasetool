@@ -175,9 +175,9 @@ TXT2HTML=rst2html
 	    -e 's/(modified)/(geändert)/' < $< > $@
 
 %.trev: %.tex
-	MODIFIED=$$(if [ -n "$$(svn status $<)" ]; then echo "(modified) ";fi);\
+	MODIFIED=$$(if [ -n "$$(svn status $<)" ]; then echo " (modified)";fi);\
 	svn info $< | grep 'Last Changed Rev:' | sed 's/$$/'"$$MODIFIED/"    \
-	| sed 's/^Last.*Rev:\s\+\(.*\)$$/\\renewcommand{\\revision}{V.\1}/'  \
+	| sed 's/^Last.*Rev:\s\+\(.*\)$$/\\renewcommand{\\revision}{V.\1 }/' \
 	> $@
 
 %.html: %.txt
