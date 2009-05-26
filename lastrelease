@@ -23,6 +23,7 @@ def up_to_date_rev (name, do_notag = True) :
     
     url        = get_popen ("svn info | grep '^URL'")
     rev        = get_popen ("svnversion -c .").rstrip ("S")
+    rev        = rev.split (':') [-1]
     suffix     = '$'
     notag      = 'NO_TAG_'
     if not do_notag :
@@ -48,7 +49,7 @@ if __name__ == "__main__" :
     parser.add_option \
         ( "-n", "--no-notag"
         , dest    = "do_notag"
-        , help    = 'Use "NOTAG" if not an svn tag'
+        , help    = 'Don't use "NO_TAG" if not an svn tag'
         , default = True
         , action  = "store_false"
         )
