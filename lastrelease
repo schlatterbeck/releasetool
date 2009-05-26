@@ -49,7 +49,7 @@ if __name__ == "__main__" :
     parser.add_option \
         ( "-n", "--no-notag"
         , dest    = "do_notag"
-        , help    = 'Don't use "NO_TAG" if not an svn tag'
+        , help    = '''Don't use "NO_TAG" if not an svn tag'''
         , default = True
         , action  = "store_false"
         )
