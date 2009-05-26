@@ -12,7 +12,7 @@ MKCHLOG=${CDUP}/projects/make/mkchlog.py
 VERSIONSED=sed -e 's/_/./g' -e 's/V\.//'
 
 README.html: $(README) $(CSS)
-	rst2html.py --stylesheet=$(CSS) $< > $@
+	rst2html --stylesheet=$(CSS) $< > $@
 
 $(NOTES): $(README)
 	$(MKCHLOG) $(NOTES) < README > $@
