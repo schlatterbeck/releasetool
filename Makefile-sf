@@ -21,7 +21,7 @@ $(CHANGES): $(README)
 	$(MKCHLOG) $(CHANGES) < README > $@
 
 upload_homepage: all
-	scp README.html $(USERNAME)@$(HOSTNAME):$(PROJECTDIR)/index.html
+	scp README.html $(USERNAME)@$(HOSTNAME):$(PROJECT_DOCDIR)/index.html
 	touch upload_homepage
 
 announce_pypi: all
@@ -30,11 +30,11 @@ announce_pypi: all
 
 upload: all $(CHANGES) $(NOTES) dist
 	@echo Preparing Release $(RELEASE)
-	@echo -n Password:
-	@read -s pw &&                                                     \
-	copher.pl --user $(USERNAME) --password $$pw --project $(PROJECT) \
-	    --package $(PACKAGE) --release $(RELEASE) --notes $(NOTES) \
-	    --changelog $(CHANGES) dist/*
+        ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net create
+        ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net \
+            mkdir $(PROJECT_RELEASEDIR)/$(RELEASE)
+        ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net shutdown
+        scp dist/* $(USERNAME),$(PROJECT)@frs.sourceforge.net:$(PROJECT_RELEASEDIR)/$(RELEASE)
 	touch upload
 
 FOCUS:=$(shell $(MKCHLOG) sf-release-focus < README)
