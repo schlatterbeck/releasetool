@@ -1,6 +1,7 @@
 README=README
 NOTES=notes
 CHANGES=changes
+RELEASENOTES=ReleaseNotes.txt
 RELEASE:=$(shell echo $(LASTRELEASE) | sed -e 's/^V_//' -e 's/_/./g')
 ifeq (,${CDUP})
   CDUP:=$(shell svn info | grep '^URL:' | sed -e 's/trunk.*$$//' \
@@ -8,6 +9,7 @@ ifeq (,${CDUP})
 	-e 's+[^/]*++g' -e 's+/+/..+g' -e 's/^/../')
 endif
 CSS:=$(CDUP)/content/html/stylesheets/default.css
+FRS=frs.sourceforge.net
 MKCHLOG=${CDUP}/projects/make/mkchlog.py
 VERSIONSED=sed -e 's/_/./g' -e 's/V\.//'
 
@@ -20,6 +22,15 @@ $(NOTES): $(README)
 $(CHANGES): $(README)
 	$(MKCHLOG) $(CHANGES) < README > $@
 
+$(RELEASENOTES): $(NOTES) $(CHANGES)
+        echo Release Name: $(RELEASE)  >> $@
+	echo ""                        >> $@
+	echo Notes:                    >> $@
+	cat $(NOTES)                   >> $@
+	echo ""                        >> $@
+	echo Changes:                  >> $@
+	cat $(CHANGES)                 >> $@
+
 upload_homepage: all
 	scp README.html $(USERNAME)@$(HOSTNAME):$(PROJECT_DOCDIR)/index.html
 	touch upload_homepage
@@ -28,13 +39,14 @@ announce_pypi: all
 	python setup.py register
 	touch announce_pypi
 
-upload: all $(CHANGES) $(NOTES) dist
+upload: all $(RELEASENOTES) dist
 	@echo Preparing Release $(RELEASE)
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net create
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net \
 	    mkdir $(PROJECT_RELEASEDIR)/$(RELEASE)
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net shutdown
-        scp dist/* $(USERNAME),$(PROJECT)@frs.sourceforge.net:$(PROJECT_RELEASEDIR)/$(RELEASE)
+	scp dist/* $(RELEASENOTES) \
+            $(USERNAME),$(PROJECT)@$(FRS):$(PROJECT_RELEASEDIR)/$(RELEASE)
 	touch upload
 
 FOCUS:=$(shell $(MKCHLOG) sf-release-focus < README)
