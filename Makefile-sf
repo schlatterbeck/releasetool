@@ -11,7 +11,12 @@ endif
 CSS:=$(CDUP)/content/html/stylesheets/default.css
 FRS=frs.sourceforge.net
 MKCHLOG=${CDUP}/projects/make/mkchlog.py
-VERSIONSED=sed -e 's/_/./g' -e 's/V\.//'
+VERSIONSED:=sed -e 's/_/./g' -e 's/V\.//'
+HOSTNAME=web.sourceforge.net
+P1:=$(shell echo $(PACKAGE) | sed 's/^\(.\).*$$/\1/')
+P2:=$(shell echo $(PACKAGE) | sed 's/^\(..\).*$$/\1/')
+PROJECT_DOCDIR=/home/groups/$(P1)/$(P2)/$(PACKAGE)/htdocs
+PROJECT_RELEASEDIR=/home/frs/project/$(P1)/$(P2)/$(PACKAGE)/$(PACKAGE)
 
 README.html: $(README) $(CSS)
 	rst2html --stylesheet=$(CSS) $< > $@
