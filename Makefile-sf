@@ -23,7 +23,7 @@ $(CHANGES): $(README)
 	$(MKCHLOG) $(CHANGES) < README > $@
 
 $(RELEASENOTES): $(NOTES) $(CHANGES)
-        echo Release Name: $(RELEASE)  >> $@
+	echo Release Name: $(RELEASE)  >> $@
 	echo ""                        >> $@
 	echo Notes:                    >> $@
 	cat $(NOTES)                   >> $@
