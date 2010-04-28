@@ -224,7 +224,7 @@ clean :
 
 clobber: clean
 	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES) $(HTMLFILE)
-	$(RM) -f $(CLOBBER)
+	$(RM) -f $(CLOBBER) $(notdir $(LNTEXSRC))
 
 $(notdir $(LNTEXSRC)): $(LNTEXSRC)
 	$(SYMLINK) $(LNTEXSRC) .
