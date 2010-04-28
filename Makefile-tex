@@ -8,8 +8,8 @@
 ##
 
 PROJARCHIVE=$(PROJECT).zip
-SOURCES=$(MAINTEXSRC) $(TEXSRC) $(OBJSRC) $(EPSSRC) $(BIBSRC) $(SKSRC) \
-    $(PNGSRC) $(JPGSRC)
+SOURCES=$(MAINTEXSRC) $(TEXSRC) $(notdir $(LNTEXSRC)) $(OBJSRC) $(EPSSRC) \
+    $(BIBSRC) $(SKSRC) $(PNGSRC) $(JPGSRC)
 DVIFILE=$(MAINTEXSRC:.tex=.dvi)
 PSFILES=$(MAINTEXSRC:.tex=.ps)
 PS4UPFILES=$(MAINTEXSRC:.tex=.4.ps)
@@ -65,6 +65,7 @@ PRINT=lpr -P$(PRINTER)
 RM=/bin/rm -f
 MV=mv
 CP=/bin/cp
+SYMLINK=/bin/ln -s
 #SVGPRINT=sodipodi -z # Doesn't create bounding box
 SVGPRINT=inkscape
 SVG2PDF=inkscape -A
@@ -224,3 +225,6 @@ clean :
 clobber: clean
 	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES) $(HTMLFILE)
 	$(RM) -f $(CLOBBER)
+
+$(notdir $(LNTEXSRC)): $(LNTEXSRC)
+	$(SYMLINK) $(LNTEXSRC) .
