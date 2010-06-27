@@ -9,7 +9,7 @@
 
 PROJARCHIVE=$(PROJECT).zip
 SOURCES=$(MAINTEXSRC) $(TEXSRC) $(notdir $(LNTEXSRC)) $(OBJSRC) $(EPSSRC) \
-    $(BIBSRC) $(SKSRC) $(PNGSRC) $(JPGSRC)
+    $(BIBSRC) $(SKSRC) $(PNGSRC) $(JPGSRC) $(FIGSRC)
 DVIFILE=$(MAINTEXSRC:.tex=.dvi)
 PSFILES=$(MAINTEXSRC:.tex=.ps)
 PS4UPFILES=$(MAINTEXSRC:.tex=.4.ps)
@@ -32,7 +32,7 @@ REVFILES=$(MAINTEXSRC:.tex=.rev) $(MAINTEXSRC:.tex=.grev) \
 BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps) \
     $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)  \
     $(PPMSRC:.ppm=.eps) $(PGMSRC:.pgm=.eps) $(PBMSRC:.pbm=.eps)    \
-    $(TSVGSRC:.tsvg=.eps)
+    $(TSVGSRC:.tsvg=.eps) $(FIGSRC:.fig=.eps)
 BUILTPS= $(SVGPSSRC:.svg=.ps)
 BUILTPNG=$(TSVGSRC:.tsvg=.png)
 BUILTGIF=$(OBJSRC:.obj=.gif)
@@ -47,7 +47,7 @@ BIBTEX=bibtex
 MAKEINDEX=makeindex
 LATEX2HTML=latex2html -split 2 -address $(EMAIL) -html_version 3.0 \
            -dir html -show_section_numbers
-FIG2PS=fig2dev -L ps
+FIG2PS=fig2dev -L eps
 OBJ2EPS=tgif -print -eps -adobe -o$(FIGDIR)
 SK2EPS=sk2ps
 PS2PDF=ps2pdf
@@ -129,7 +129,7 @@ TXT2HTML=rst2html
 %.4.ps: %.ps
 	psnup -l -pa4 -W297.63779500 -H420.94488 -b5mm -4 $< > $@
 
-%.ps: %.fig
+%.eps: %.fig
 	$(FIG2PS) $< > $@
 
 %.eps: %.obj
