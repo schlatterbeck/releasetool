@@ -28,7 +28,7 @@ $(CHANGES): $(README)
 	$(MKCHLOG) $(CHANGES) < README > $@
 
 $(RELEASENOTES): $(NOTES) $(CHANGES)
-	echo Release Name: $(RELEASE)  >> $@
+	echo Release Name: $(RELEASE)   > $@
 	echo ""                        >> $@
 	echo Notes:                    >> $@
 	cat $(NOTES)                   >> $@
@@ -37,7 +37,8 @@ $(RELEASENOTES): $(NOTES) $(CHANGES)
 	cat $(CHANGES)                 >> $@
 
 upload_homepage: all
-	scp README.html $(USERNAME)@$(HOSTNAME):$(PROJECT_DOCDIR)/index.html
+	scp README.html \
+            $(USERNAME),$(PROJECT)@$(FRS):$(PROJECT_DOCDIR)/index.html
 	touch upload_homepage
 
 announce_pypi: all
