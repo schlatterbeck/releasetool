@@ -8,7 +8,10 @@
 ##
 
 PROJARCHIVE=$(PROJECT).zip
-SOURCES=$(MAINTEXSRC) $(TEXSRC) $(notdir $(LNTEXSRC)) $(OBJSRC) $(EPSSRC) \
+LINKSOURCES=$(LNTEXSRC) $(LNOBJSRC) $(LNSKSRC) $(LNPNGSRC) $(LNJPGSRC) \
+    $(LNSVGSRC) $(LNDATASRC) $(LNPPMSRC) $(LNPGMSRC) $(LNPBMSRC)       \
+    $(LNTSVGSRC) $(LNFIGSRC)
+SOURCES=$(MAINTEXSRC) $(TEXSRC) $(notdir $(LINKSOURCES)) $(OBJSRC) $(EPSSRC) \
     $(BIBSRC) $(SKSRC) $(PNGSRC) $(JPGSRC) $(FIGSRC)
 DVIFILE=$(MAINTEXSRC:.tex=.dvi)
 PSFILES=$(MAINTEXSRC:.tex=.ps)
@@ -32,7 +35,11 @@ REVFILES=$(MAINTEXSRC:.tex=.rev) $(MAINTEXSRC:.tex=.grev) \
 BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps) \
     $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)  \
     $(PPMSRC:.ppm=.eps) $(PGMSRC:.pgm=.eps) $(PBMSRC:.pbm=.eps)    \
-    $(TSVGSRC:.tsvg=.eps) $(FIGSRC:.fig=.eps)
+    $(TSVGSRC:.tsvg=.eps) $(FIGSRC:.fig=.eps) $(notdir \
+    $(LNOBJSRC:.obj=.eps) $(LNSKSRC:.sk=.eps) $(LNPNGSRC:.png=.eps) \
+    $(LNJPGSRC:.jpg=.eps) $(LNSVGSRC:.svg=.eps) $(LNDATASRC:.data=.eps)  \
+    $(LNPPMSRC:.ppm=.eps) $(LNPGMSRC:.pgm=.eps) $(LNPBMSRC:.pbm=.eps)    \
+    $(LNTSVGSRC:.tsvg=.eps) $(LNFIGSRC:.fig=.eps))
 BUILTPS= $(SVGPSSRC:.svg=.ps)
 BUILTPNG=$(TSVGSRC:.tsvg=.png)
 BUILTGIF=$(OBJSRC:.obj=.gif)
@@ -234,7 +241,7 @@ clean :
 
 clobber: clean
 	$(RM) $(PDFFILES) $(PSFILES) $(PS4UPFILES) $(PDF4UPFILES) $(HTMLFILE)
-	$(RM) -f $(CLOBBER) $(notdir $(LNTEXSRC))
+	$(RM) -f $(CLOBBER) $(notdir $(LINKSOURCES))
 
-$(notdir $(LNTEXSRC)): $(LNTEXSRC)
-	$(SYMLINK) $(LNTEXSRC) .
+$(notdir $(LINKSOURCES)): $(LINKSOURCES)
+	$(SYMLINK) $(LINKSOURCES) .
