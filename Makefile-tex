@@ -193,13 +193,15 @@ TXT2HTML=rst2html
 	    -e 's/(modified)/(geändert)/' < $< > $@
 
 DATEFMT=\\def\\runtuxdate{\\formatdate{\3}{\2}{\1}}
-%.trev: %.tex
+%.trev: %.tex $(SOURCES)
 	MODIFIED=$$(if [ -n "$$(svn status $<)" ]; then echo " (modified)";fi);\
-	svn info $< | grep 'Last Changed Rev:' | sed 's/$$/'"$$MODIFIED/"    \
-	| sed 's/^Last.*Rev:\s\+\(.*\)$$/\\renewcommand{\\revision}{V.\1 }/' \
+	svn info $< | grep 'Last Changed Rev:' | cut -d' ' -f4- | sort -n    \
+        | sed 's/$$/'"$$MODIFIED/"                                           \
+	| sed 's/^\(.*\)$$/\\renewcommand{\\revision}{V.\1 }/'               \
 	> $@
 	svn info $< | grep 'Last Changed Date' | cut -d' ' -f4 |             \
-	sed 's/\([0-9]*\)-\([0-9]*\)-\([0-9]*\)/$(DATEFMT)/'                   \
+        sort -n | head -1 |                                                  \
+	sed 's/\([0-9]*\)-\([0-9]*\)-\([0-9]*\)/$(DATEFMT)/'                 \
 	>> $@
 
 %.html: %.txt

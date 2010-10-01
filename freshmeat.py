@@ -20,3 +20,4 @@ if len (args) != 3 :
 changelog = open (args [1], 'r').read ()
 r  = Release   (args [2], changelog, False, *opt.tag)
 fm = Freshmeat (args [0], 'releases', put = r.element)
+print fm.code, fm.result
