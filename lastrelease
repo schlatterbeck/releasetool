@@ -68,6 +68,13 @@ if __name__ == "__main__" :
         , default = False
         , action  = "store_true"
         )
+    parser.add_option \
+        ( "-t", "--tex-format"
+        , dest    = "tex_format"
+        , help    = "Output tag and date of last commit in TeX format"
+        , default = False
+        , action  = "store_true"
+        )
     (options, args) = parser.parse_args ()
     if len (args) > 1 :
         parser.print_help (sys.stderr)
@@ -75,7 +82,14 @@ if __name__ == "__main__" :
     project = ''
     if len (args) == 1 :
         project = args [0]
-    if options.date :
+    if options.tex_format :
+        r = up_to_date_rev (project, options.do_notag)
+        if r.endswith ('M') :
+            r = r.replace ('M', ' (modified)')
+        print "\\renewcommand{\\revision}{V.%s}" % r
+        d = commit_date ()
+        print d.strftime ("\\def\\runtuxdate{\\formatdate{%d}{%m}{%Y}}")
+    elif options.date :
         print commit_date ().strftime ('%Y-%m-%d')
     else :
         print up_to_date_rev (project, options.do_notag)
