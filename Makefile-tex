@@ -85,6 +85,7 @@ PDF2PS=pdf2ps
 TXT2LATEX=rst2newlatex
 #TXT2LATEX_OPT=
 TXT2HTML=rst2html
+EPS2EPS=eps2eps
 
 # SUFFIXES
 
@@ -162,8 +163,10 @@ TXT2HTML=rst2html
 	$(PNMTOPS) $(PNMTOPS_OPT) $< > $@
 
 # No transparency
- %.eps: %.svg
-	$(SVGPRINT) '$@' $< 
+%.eps: %.svg
+	$(SVGPRINT) '$@.tmp' $< 
+	$(EPS2EPS) '$@.tmp' '$@'
+	$(RM) '$@.tmp'
 
 %.pdfp: %.svg
 	$(SVG2PDF) '$@' $<
