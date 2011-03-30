@@ -86,7 +86,7 @@ if __name__ == "__main__" :
         r = up_to_date_rev (project, options.do_notag)
         if r.endswith ('M') :
             r = r.replace ('M', ' (modified)')
-        print "\\renewcommand{\\revision}{V.%s}" % r
+        print "\\renewcommand{\\revision}{V.%s }" % r
         d = commit_date ()
         print d.strftime ("\\def\\runtuxdate{\\formatdate{%d}{%m}{%Y}}")
     elif options.date :
