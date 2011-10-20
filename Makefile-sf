@@ -48,9 +48,9 @@ announce_pypi: all
 
 upload: all $(RELEASENOTES) dist
 	@echo Preparing Release $(RELEASE)
-	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net create
+	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net create || true
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net \
-	    mkdir $(PROJECT_RELEASEDIR)/$(RELEASE)
+	    mkdir $(PROJECT_RELEASEDIR)/$(RELEASE) || true
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net shutdown
 	scp dist/* $(RELEASENOTES) \
             $(USERNAME),$(PROJECT)@$(FRS):$(PROJECT_RELEASEDIR)/$(RELEASE)
