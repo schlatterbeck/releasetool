@@ -17,7 +17,8 @@ HOSTNAME=web.sourceforge.net
 P1:=$(shell echo $(PACKAGE) | sed 's/^\(.\).*$$/\1/')
 P2:=$(shell echo $(PACKAGE) | sed 's/^\(..\).*$$/\1/')
 PROJECT_DOCDIR=/home/groups/$(P1)/$(P2)/$(PACKAGE)/htdocs
-PROJECT_RELEASEDIR=/home/frs/project/$(P1)/$(P2)/$(PACKAGE)/$(PACKAGE)
+PACKAGE_DIR=/home/frs/project/$(P1)/$(P2)/$(PACKAGE)
+PROJECT_RELEASEDIR=$(PACKAGE_DIR)/$(PACKAGE)
 
 README.html: $(README) $(CSS)
 	rst2html --stylesheet=$(CSS) $< > $@
@@ -52,8 +53,14 @@ upload: all $(RELEASENOTES) dist
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net \
 	    mkdir $(PROJECT_RELEASEDIR)/$(RELEASE) || true
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net shutdown
-	scp dist/* $(RELEASENOTES) \
-            $(USERNAME),$(PROJECT)@$(FRS):$(PROJECT_RELEASEDIR)/$(RELEASE)
+	scp dist/* \
+	    $(USERNAME),$(PROJECT)@$(FRS):$(PROJECT_RELEASEDIR)/$(RELEASE)
+	scp $(RELEASENOTES) \
+	    $(USERNAME),$(PROJECT)@$(FRS):$(PROJECT_RELEASEDIR)/$(RELEASE)/readme.txt
+	scp README \
+	    $(USERNAME),$(PROJECT)@$(FRS):$(PROJECT_RELEASEDIR)/readme.rst
+	scp README \
+	    $(USERNAME),$(PROJECT)@$(FRS):$(PACKAGE_DIR)/readme.rst
 	touch upload
 
 FOCUS:=$(shell $(MKCHLOG) sf-release-focus < README)
