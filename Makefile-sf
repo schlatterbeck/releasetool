@@ -64,8 +64,12 @@ upload: all $(RELEASENOTES) dist
 	touch upload
 
 FOCUS:=$(shell $(MKCHLOG) sf-release-focus < README)
+ifndef URL
 URL:=$(shell python setup.py --url)
+endif
+ifndef LICENSE
 LICENSE:=$(shell python setup.py --license | sed 's/Library or //')
+endif
 
 announce: all $(CHANGES) $(NOTES) dist
 	 $(FRESHMEAT) -t "$(FOCUS)" $(PROJECT) $(NOTES) "$(RELEASE)"
