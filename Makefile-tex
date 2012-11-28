@@ -57,7 +57,8 @@ LATEX2HTML=latex2html -split 2 -address $(EMAIL) -html_version 3.0 \
            -dir html -show_section_numbers
 FIG2PS=fig2dev -L eps
 OBJ2EPS=tgif -print -eps -adobe -o$(FIGDIR)
-SK2EPS=sk2ps
+#SK2EPS=sk2ps
+SK2EPS=uniconvertor
 PS2PDF=ps2pdf
 PS2PDFOPT=
 DVI2PS=dvips
@@ -145,7 +146,8 @@ EPS2EPS=eps2eps
 	$(OBJ2EPS) $<
 
 %.eps: %.sk
-	$(SK2EPS) $< $@
+	$(SK2EPS) $< __$@.ps
+	$(MV) __$@.ps $@
 
 %.ppm: %.jpg
 	$(DJPEG) $< > $@
