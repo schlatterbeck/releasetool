@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from optparse import OptionParser
 
-tag_re   = 'tags/((release|V)_[^_]*_?([0-9]+_[0-9]+))'
+tag_re   = 'tags/([^/]*(release|V)[_-][^_-]*[_-]?([0-9]+[_.-][0-9]+))'
 trunk_re = 'trunk'
 
 def get_popen (cmd) :
@@ -22,9 +22,10 @@ class VC (object) :
         revision and X and Y are major an minor number.
     """
 
-    def __init__ (self, name = None, do_notag = True) :
+    def __init__ (self, name = None, do_notag = True, tag_re = tag_re) :
         self.name     = name
         self.do_notag = do_notag
+        self.tag_re   = tag_re
         self.annotate = ''
         if self.do_notag :
             self.annotate = 'NO_TAG_'
@@ -49,12 +50,12 @@ class SVN (VC) :
         suffix     = '$'
         if self.name :
             suffix = '/%s$' % self.name
-        tag_rgx    = re.compile (tag_re   + suffix)
-        trunk_rgx  = re.compile (trunk_re + suffix)
+        tag_rgx    = re.compile (self.tag_re + suffix)
+        trunk_rgx  = re.compile (trunk_re    + suffix)
         m   = tag_rgx.search (url)
         if m :
             if rev.endswith ("M") :
-                return "%s%s:%s" % (self.annotate, m.group (1), rev)
+                return "%s%s_%s" % (self.annotate, m.group (3), rev)
             return "V_%s_%s" % (m.group (3), rev)
         m   = trunk_rgx.search (url)
         if m :
@@ -123,6 +124,12 @@ if __name__ == "__main__" :
         , action  = "store_true"
         )
     parser.add_option \
+        ( "-r", "--tag-re"
+        , dest    = "tag_re"
+        , help    = "Tag regular expression"
+        , default = tag_re
+        )
+    parser.add_option \
         ( "-t", "--tex-format"
         , dest    = "tex_format"
         , help    = "Output tag and date of last commit in TeX format"
@@ -144,7 +151,7 @@ if __name__ == "__main__" :
     if mode :
         vc = GIT (project, options.do_notag)
     else :
-        vc = SVN (project, options.do_notag)
+        vc = SVN (project, options.do_notag, tag_re = tag_re)
     if options.tex_format :
         r = vc.up_to_date_rev ()
         if r.endswith ('M') :
