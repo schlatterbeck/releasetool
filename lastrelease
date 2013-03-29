@@ -157,7 +157,9 @@ if __name__ == "__main__" :
         if r.endswith ('M') :
             r = r.replace ('M', ' (modified)')
         r = r.replace ('_', '-')
-        print "\\renewcommand{\\revision}{V.%s }" % r
+        if not r.startswith ('V') :
+            r = 'V.%s' % r
+        print "\\renewcommand{\\revision}{%s }" % r
         d = vc.commit_date ()
         print d.strftime ("\\def\\runtuxdate{\\formatdate{%d}{%m}{%Y}}")
     elif options.date :
