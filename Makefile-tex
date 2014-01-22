@@ -81,7 +81,7 @@ SYMLINK=/bin/ln -s -f
 #SVGPRINT=sodipodi -z # Doesn't create bounding box
 SVGPRINT=inkscape -E
 SVG2PDF=inkscape -A
-SVG2PNG=inkscape --export-dpi=300 -e
+SVG2PNG=inkscape --export-background=white --export-dpi=300 -e
 PDF2PS=pdf2ps
 TXT2LATEX=rst2newlatex
 #TXT2LATEX_OPT=
