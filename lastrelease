@@ -3,6 +3,7 @@
 import sys
 import re
 import os
+import pytz
 from datetime import datetime
 from optparse import OptionParser
 
@@ -16,6 +17,15 @@ def get_popen (cmd) :
     fd.close ()
     return ret
 # end def get_popen
+
+def get_timezone () :
+    """ For now read /etc/timezone, there should be other ways on
+        different operating systems and an environment variable should
+        also be possible for overrides...
+    """
+    tz = open ('/etc/timezone', 'r').readline ().strip ()
+    return pytz.timezone (tz)
+# end def get_timezone
 
 class VC (object) :
     """ Convention: A revision is name_X_Y where name is the released
@@ -74,11 +84,16 @@ class GIT (VC) :
     """
 
     def commit_date (self) :
-        line = get_popen ('git log -n 1 | grep "^Date:"')
-        d    = line.split (':', 1) [1].strip ()
-        assert (d.endswith ('+0200'))
-        d    = d.rsplit (None, 1) [0]
-        dt   = datetime.strptime (d, '%a %b %d %H:%M:%S %Y')
+        line  = get_popen ('git log -n 1 | grep "^Date:"')
+        d     = line.split (':', 1) [1].strip ()
+        d, tz = d.rsplit (None, 1)
+        tz    = str (int (tz, 10))
+        if not tz.startswith ('-') :
+            tz = '+' + tz
+        tz    = pytz.timezone ('Etc/GMT%s' % tz)
+        dt    = datetime.strptime (d, '%a %b %d %H:%M:%S %Y')
+        dt    = dt.replace (tzinfo = tz)
+        dt    = dt.astimezone (get_timezone ())
         return dt
     # end def commit_date
 
@@ -88,19 +103,24 @@ class GIT (VC) :
             merge. For discussion see
             http://www.xerxesb.com/2010/git-describe-and-the-tale-of-the-wrong-commits/
         """
-        name = self.name or 'V'
-        prg  = []
-        prg.append ('git log --oneline --decorate=short --first-parent')
-        prg.append ('egrep "tag: (%s)" 2> /dev/null' % name)
-        prg.append ('head -n1')
-        line = get_popen (' | '.join (prg))
-        rgx  = re.compile (r"tag:\s+(%s[^ )]*)" % name)
-        m    = rgx.search (line)
-        if not m :
+        name = self.name.split ('/')[0] or 'V'
+        prg  = 'git log --oneline --decorate=short --first-parent'
+        rgx  = re.compile \
+            (r"tag:\s+((%s|%s)[^ )]*)" % (name, name.upper ()))
+        for line in get_popen (prg).split ('\n') :
+            m = rgx.search (line)
+            if m :
+                break
+        else :
             line = get_popen ('git log -n1 | grep "^commit"').strip ()
             return self.annotate + line.split (None, 1) [1]
-        line = get_popen \
-            ('git describe --tags --dirty=-modified --match="%s"' % m.group (1))
+        line = get_popen ('git describe --tags --dirty=-modified --match="%s"'
+            % m.group (1)
+            )
+        if line.startswith (name) or line.startswith (name.upper ()) :
+            line = line [len (name):]
+        if line [0] in '-_' :
+            line = line [1:]
         return line.strip ()
     # end def up_to_date_rev
 
@@ -140,15 +160,15 @@ if __name__ == "__main__" :
     if len (args) > 1 :
         parser.print_help (sys.stderr)
         sys.exit (23)
-    mode = None
+    mode = 'git'
     try :
-        mode = os.stat ('.git')
+        mode = os.stat ('.svn')
     except OSError :
         pass
     project = ''
     if len (args) == 1 :
         project = args [0]
-    if mode :
+    if mode == 'git' :
         vc = GIT (project, options.do_notag)
     else :
         vc = SVN (project, options.do_notag, tag_re = tag_re)
