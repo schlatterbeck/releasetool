@@ -1,10 +1,5 @@
 ##
-##  File:          $RCSfile$
-##  Version:       $Revision$
-##  Last changes:  $Date$
-##  Author:        $Author$
-##
-##  FileID: $Id$
+##  File:          Makefile-tex
 ##
 LASTRELEASE_CMD=$(HOME)/checkout/own/projects/svntools/lastrelease
 
@@ -83,7 +78,7 @@ SVGPRINT=inkscape -E
 SVG2PDF=inkscape -A
 SVG2PNG=inkscape --export-background=white --export-dpi=300 -e
 PDF2PS=pdf2ps
-TXT2LATEX=rst2newlatex
+TXT2LATEX=rst2latex
 #TXT2LATEX_OPT=
 TXT2HTML=rst2html
 EPS2EPS=eps2eps
