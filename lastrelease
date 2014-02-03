@@ -1,11 +1,12 @@
 #!/usr/bin/python
 
+from   __future__ import print_function
 import sys
 import re
 import os
 import pytz
-from datetime import datetime
-from optparse import OptionParser
+from   datetime import datetime
+from   optparse import OptionParser
 
 tag_re   = 'tags/([^/]*(release|V)[_-][^_-]*[_-]?([0-9]+[_.-][0-9]+))'
 trunk_re = 'trunk'
@@ -46,6 +47,11 @@ class VC (object) :
 
 class SVN (VC) :
 
+    def author (self) :
+        line = get_popen ("svn info | grep '^Last Changed Author:'")
+        return line.split (':', 1) [1].strip ()
+    # end def author
+
     def commit_date (self) :
         line = get_popen ("svn info | grep '^Last Changed Date:'")
         d, t = line.split (':', 1) [1].split (' ') [1:3]
@@ -83,11 +89,17 @@ class GIT (VC) :
         the version numbers.
     """
 
+    def author (self) :
+        line = get_popen ('git log -n 1 | grep "^Author:"')
+        return line.split (':', 1) [1].strip ()
+    # end def author
+
     def commit_date (self) :
         line  = get_popen ('git log -n 1 | grep "^Date:"')
         d     = line.split (':', 1) [1].strip ()
         d, tz = d.rsplit (None, 1)
-        tz    = str (int (tz, 10))
+        assert tz.endswith ('00')
+        tz    = str (-int (tz [:-2], 10))
         if not tz.startswith ('-') :
             tz = '+' + tz
         tz    = pytz.timezone ('Etc/GMT%s' % tz)
@@ -106,7 +118,7 @@ class GIT (VC) :
         name = self.name.split ('/')[0] or 'V'
         prg  = 'git log --oneline --decorate=short --first-parent'
         rgx  = re.compile \
-            (r"tag:\s+((%s|%s)[^ )]*)" % (name, name.upper ()))
+            (r"tag:\s+((%s|%s)[^ ),]*)" % (name, name.upper ()))
         for line in get_popen (prg).split ('\n') :
             m = rgx.search (line)
             if m :
@@ -130,6 +142,18 @@ if __name__ == "__main__" :
     usage  = "%prog [-n --no-notag] [project-name]"
     parser = OptionParser (usage = usage)
     parser.add_option \
+        ( "-A", "--override-author"
+        , dest    = "override_author"
+        , help    = "Override Author"
+        )
+    parser.add_option \
+        ( "-a", "--author"
+        , dest    = "author"
+        , help    = "Display author"
+        , default = False
+        , action  = "store_true"
+        )
+    parser.add_option \
         ( "-n", "--no-notag"
         , dest    = "do_notag"
         , help    = '''Don't use "NO_TAG" if not an svn tag'''
@@ -148,6 +172,13 @@ if __name__ == "__main__" :
         , dest    = "tag_re"
         , help    = "Tag regular expression"
         , default = tag_re
+        )
+    parser.add_option \
+        ( "-s", "--re-structured-text"
+        , dest    = "rest_format"
+        , help    = "Output tag and date of last commit in ReST format"
+        , default = False
+        , action  = "store_true"
         )
     parser.add_option \
         ( "-t", "--tex-format"
@@ -179,10 +210,22 @@ if __name__ == "__main__" :
         r = r.replace ('_', '-')
         if not r.startswith ('V') :
             r = 'V.%s' % r
-        print "\\renewcommand{\\revision}{%s }" % r
+        print ("\\renewcommand{\\revision}{%s }" % r)
         d = vc.commit_date ()
-        print d.strftime ("\\def\\runtuxdate{\\formatdate{%d}{%m}{%Y}}")
+        print (d.strftime ("\\def\\runtuxdate{\\formatdate{%d}{%m}{%Y}}"))
+    elif options.rest_format :
+        r = vc.up_to_date_rev ()
+        if r.endswith ('M') :
+            r = r.replace ('M', ' (modified)')
+        r = r.replace ('_', '-')
+        d = vc.commit_date ()
+        a = options.override_author or vc.author ()
+        print (":Author: %s"   % a)
+        print (":Revision: %s" % r)
+        print (":Date: %s" % d.strftime ("%Y-%m-%d %H:%M:%S %z"))
     elif options.date :
-        print vc.commit_date ().strftime ('%Y-%m-%d')
+        print (vc.commit_date ().strftime ('%Y-%m-%d'))
+    elif options.author :
+        print (options.override_author or vc.author ())
     else :
-        print vc.up_to_date_rev ()
+        print (vc.up_to_date_rev ())
