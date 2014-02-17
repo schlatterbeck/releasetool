@@ -1,17 +1,16 @@
 README=README
 NOTES=notes
 CHANGES=changes
+# Default can be overridden
+ifeq (,${RELEASETOOLS})
+    RELEASETOOLS=../releasetools
+endif
 RELEASENOTES=ReleaseNotes.txt
 RELEASE:=$(shell echo $(LASTRELEASE) | sed -e 's/^V_//' -e 's/_/./g')
-ifeq (,${CDUP})
-  CDUP:=$(shell svn info | grep '^URL:' | sed -e 's/trunk.*$$//' \
-        -e 's/branches.*$$//' -e 's/tags.*$$//' -e 's+.*svn/own/projects/++' \
-	-e 's+[^/]*++g' -e 's+/+/..+g' -e 's/^/../')
-endif
-CSS:=$(CDUP)/content/html/stylesheets/default.css
+CSS:=$(RELEASETOOLS)/default.css
 FRS=frs.sourceforge.net
-MKCHLOG=${CDUP}/projects/make/mkchlog.py
-FRESHMEAT=${CDUP}/projects/make/freshmeat.py
+MKCHLOG=${RELEASETOOLS}/mkchlog.py
+FRESHMEAT=${RELEASETOOLS}/freshmeat.py
 VERSIONSED:=sed -e 's/_/./g' -e 's/V\.//'
 HOSTNAME=web.sourceforge.net
 P1:=$(shell echo $(PACKAGE) | sed 's/^\(.\).*$$/\1/')
