@@ -118,7 +118,7 @@ class GIT (VC) :
         name = self.name.split ('/')[0] or 'V'
         prg  = 'git log --oneline --decorate=short --first-parent'
         rgx  = re.compile \
-            (r"tag:\s+((%s|%s)[^ ),]*)" % (name, name.upper ()))
+            (r"tag:\s+(((release_)?%s|%s)[^ ),]*)" % (name, name.upper ()))
         for line in get_popen (prg).split ('\n') :
             m = rgx.search (line)
             if m :
@@ -129,6 +129,13 @@ class GIT (VC) :
         line = get_popen ('git describe --tags --dirty=-modified --match="%s"'
             % m.group (1)
             )
+        found = False
+        for prefix in '', 'release_' :
+            for n in name, name.upper () :
+                pn = prefix + n
+                if not found and line.startswith (pn) :
+                    line  = line [len (pn):]
+                    found = True
         if line.startswith (name) or line.startswith (name.upper ()) :
             line = line [len (name):]
         if line [0] in '-_' :
