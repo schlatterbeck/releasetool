@@ -175,6 +175,13 @@ if __name__ == "__main__" :
         , action  = "store_true"
         )
     parser.add_option \
+        ( "-D", "--verbosedate"
+        , dest    = "verbosedate"
+        , help    = "Verbose date format"
+        , default = False
+        , action  = "store_true"
+        )
+    parser.add_option \
         ( "-r", "--tag-re"
         , dest    = "tag_re"
         , help    = "Tag regular expression"
@@ -229,7 +236,10 @@ if __name__ == "__main__" :
         a = options.override_author or vc.author ()
         print (":Author: %s"   % a)
         print (":Revision: %s" % r)
-        print (":Date: %s" % d.strftime ("%Y-%m-%d %H:%M:%S %z"))
+        if options.verbosedate :
+            print (":Date: %s" % d.strftime ("%Y-%m-%d %H:%M:%S %z"))
+        else :
+            print (":Date: %s" % d.strftime ("%Y-%m-%d"))
     elif options.date :
         print (vc.commit_date ().strftime ('%Y-%m-%d'))
     elif options.author :
