@@ -18,7 +18,7 @@ HOSTNAME=web.sourceforge.net
 P1:=$(shell echo $(PACKAGE) | sed 's/^\(.\).*$$/\1/')
 P2:=$(shell echo $(PACKAGE) | sed 's/^\(..\).*$$/\1/')
 PROJECT_DOCDIR=/home/groups/$(P1)/$(P2)/$(PACKAGE)/htdocs
-PACKAGE_DIR=/home/frs/project/$(P1)/$(P2)/$(PACKAGE)
+PACKAGE_DIR=/home/frs/project/$(PACKAGE)
 PROJECT_RELEASEDIR=$(PACKAGE_DIR)/$(PACKAGE)
 CLEAN=README.html MANIFEST ${CHANGES} ${NOTES} ${RELEASENOTES} \
     announce_pypi announce upload upload_homepage dist build
