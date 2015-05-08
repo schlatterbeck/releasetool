@@ -108,7 +108,9 @@ EPS2EPS=eps2eps
 	    $(MAKEINDEX) $*.idx && \
 	    $(LATEX) $< ; \
 	fi
-	while grep -s "Rerun to get cross-references right" $*.log ; \
+	while grep -Es \
+            "Rerun to get cross-references right|rerunfilecheck Warning:" \
+            $*.log ; \
 	do \
 	    if grep -s "^Writing index file" $*.log ; \
 	    then \
