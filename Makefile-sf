@@ -50,6 +50,10 @@ announce_pypi: all
 	python setup.py register
 	touch announce_pypi
 
+upload_pypi: all dist
+	python setup.py sdist upload
+	touch upload_pypi
+
 upload: all $(RELEASENOTES) dist
 	@echo Preparing Release $(RELEASE)
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net create || true
