@@ -21,7 +21,7 @@ PROJECT_DOCDIR=/home/groups/$(P1)/$(P2)/$(PACKAGE)/htdocs
 PACKAGE_DIR=/home/frs/project/$(PACKAGE)
 PROJECT_RELEASEDIR=$(PACKAGE_DIR)/$(PACKAGE)
 CLEAN=README.html MANIFEST ${CHANGES} ${NOTES} ${RELEASENOTES} \
-    announce_pypi announce upload upload_homepage dist build
+    announce_pypi upload_pypi announce upload upload_homepage dist build
 
 README.html: $(README) $(CSS)
 	rst2html --stylesheet=$(CSS) $< > $@
@@ -53,6 +53,7 @@ announce_pypi: all
 upload_pypi: all dist
 	python setup.py sdist upload
 	touch upload_pypi
+	touch announce_pypi
 
 upload: all $(RELEASENOTES) dist
 	@echo Preparing Release $(RELEASE)
