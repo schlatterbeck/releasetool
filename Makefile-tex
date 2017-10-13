@@ -136,6 +136,14 @@ EPS2EPS=eps2eps
 %.4.ps: %.ps
 	psnup -l -pa4 -W297.63779500 -H420.94488 -b5mm -4 $< > $@
 
+# No transparency
+%.eps: %.svg
+	$(SVGPRINT) '$@' $<
+
+#$(SVGPRINT) '$@.tmp' $<
+#$(EPS2EPS) '$@.tmp' '$@'
+#$(RM) '$@.tmp'
+
 %.eps: %.fig
 	$(FIG2PS) $< > $@
 
@@ -160,12 +168,6 @@ EPS2EPS=eps2eps
 
 %.eps: %.pbm
 	$(PNMTOPS) $(PNMTOPS_OPT) $< > $@
-
-# No transparency
-%.eps: %.svg
-	$(SVGPRINT) '$@.tmp' $< 
-	$(EPS2EPS) '$@.tmp' '$@'
-	$(RM) '$@.tmp'
 
 %.pdfp: %.svg
 	$(SVG2PDF) '$@' $<
