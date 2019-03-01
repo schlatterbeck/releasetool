@@ -6,7 +6,7 @@ import re
 import os
 import pytz
 from   datetime import datetime
-from   optparse import OptionParser
+from   argparse import ArgumentParser
 
 tag_re   = 'tags/([^/]*(release|V)[_-][^_-]*[_-]?([0-9]+[_.-][0-9]+))'
 trunk_re = 'trunk'
@@ -89,6 +89,10 @@ class GIT (VC) :
         the version numbers.
     """
 
+    def __init__ (self, name = None, do_notag = True, tag_re = None) :
+        VC.__init__ (self, name, do_notag, tag_re)
+    # end def __init__
+
     def author (self) :
         line = get_popen ('git log -n 1 | grep "^Author:"')
         return line.split (':', 1) [1].strip ()
@@ -117,8 +121,12 @@ class GIT (VC) :
         """
         name = self.name.split ('/')[0] or 'V'
         prg  = 'git log --oneline --decorate=short --first-parent'
-        rgx  = re.compile \
-            (r"tag:\s+(((release_)?%s|%s)[^ ),]*)" % (name, name.upper ()))
+        if self.tag_re :
+            rgx  = re.compile \
+                (r"tag:\s+((%s)[^ ),]*)" % self.tag_re)
+        else :
+            rgx  = re.compile \
+                (r"tag:\s+(((release_)?%s|%s)[^ ),]*)" % (name, name.upper ()))
         for line in get_popen (prg).split ('\n') :
             m = rgx.search (line)
             if m :
@@ -146,78 +154,77 @@ class GIT (VC) :
 # end class GIT
 
 if __name__ == "__main__" :
-    usage  = "%prog [-n --no-notag] [project-name]"
-    parser = OptionParser (usage = usage)
-    parser.add_option \
+    parser = ArgumentParser ()
+    parser.add_argument \
+        ( "project"
+        , help    = "Name of the project in version control system"
+        , nargs   = '?'
+        , default = ''
+        )
+    parser.add_argument \
         ( "-A", "--override-author"
         , dest    = "override_author"
         , help    = "Override Author"
         )
-    parser.add_option \
+    parser.add_argument \
         ( "-a", "--author"
         , dest    = "author"
         , help    = "Display author"
         , default = False
         , action  = "store_true"
         )
-    parser.add_option \
+    parser.add_argument \
         ( "-n", "--no-notag"
         , dest    = "do_notag"
         , help    = '''Don't use "NO_TAG" if not an svn tag'''
         , default = True
         , action  = "store_false"
         )
-    parser.add_option \
+    parser.add_argument \
         ( "-d", "--date"
         , dest    = "date"
         , help    = "Output date of last commit"
         , default = False
         , action  = "store_true"
         )
-    parser.add_option \
+    parser.add_argument \
         ( "-D", "--verbosedate"
         , dest    = "verbosedate"
         , help    = "Verbose date format"
         , default = False
         , action  = "store_true"
         )
-    parser.add_option \
+    parser.add_argument \
         ( "-r", "--tag-re"
         , dest    = "tag_re"
         , help    = "Tag regular expression"
         , default = tag_re
         )
-    parser.add_option \
+    parser.add_argument \
         ( "-s", "--re-structured-text"
         , dest    = "rest_format"
         , help    = "Output tag and date of last commit in ReST format"
         , default = False
         , action  = "store_true"
         )
-    parser.add_option \
+    parser.add_argument \
         ( "-t", "--tex-format"
         , dest    = "tex_format"
         , help    = "Output tag and date of last commit in TeX format"
         , default = False
         , action  = "store_true"
         )
-    (options, args) = parser.parse_args ()
-    if len (args) > 1 :
-        parser.print_help (sys.stderr)
-        sys.exit (23)
+    args = parser.parse_args ()
     mode = 'git'
     try :
         mode = os.stat ('.svn')
     except OSError :
         pass
-    project = ''
-    if len (args) == 1 :
-        project = args [0]
     if mode == 'git' :
-        vc = GIT (project, options.do_notag)
+        vc = GIT (args.project, args.do_notag, tag_re = args.tag_re)
     else :
-        vc = SVN (project, options.do_notag, tag_re = tag_re)
-    if options.tex_format :
+        vc = SVN (args.project, args.do_notag, tag_re = args.tag_re)
+    if args.tex_format :
         r = vc.up_to_date_rev ()
         if r.endswith ('M') :
             r = r.replace ('M', ' (modified)')
@@ -227,22 +234,22 @@ if __name__ == "__main__" :
         print ("\\renewcommand{\\revision}{%s }" % r)
         d = vc.commit_date ()
         print (d.strftime ("\\def\\runtuxdate{\\formatdate{%d}{%m}{%Y}}"))
-    elif options.rest_format :
+    elif args.rest_format :
         r = vc.up_to_date_rev ()
         if r.endswith ('M') :
             r = r.replace ('M', ' (modified)')
         r = r.replace ('_', '-')
         d = vc.commit_date ()
-        a = options.override_author or vc.author ()
+        a = args.override_author or vc.author ()
         print (":Author: %s"   % a)
         print (":Revision: %s" % r)
-        if options.verbosedate :
+        if args.verbosedate :
             print (":Date: %s" % d.strftime ("%Y-%m-%d %H:%M:%S %z"))
         else :
             print (":Date: %s" % d.strftime ("%Y-%m-%d"))
-    elif options.date :
+    elif args.date :
         print (vc.commit_date ().strftime ('%Y-%m-%d'))
-    elif options.author :
-        print (options.override_author or vc.author ())
+    elif args.author :
+        print (args.override_author or vc.author ())
     else :
         print (vc.up_to_date_rev ())
