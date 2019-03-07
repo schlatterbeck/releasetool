@@ -8,7 +8,6 @@ import pytz
 from   datetime import datetime
 from   argparse import ArgumentParser
 
-tag_re   = 'tags/([^/]*(release|V)[_-][^_-]*[_-]?([0-9]+[_.-][0-9]+))'
 trunk_re = 'trunk'
 
 def get_popen (cmd) :
@@ -33,7 +32,7 @@ class VC (object) :
         revision and X and Y are major an minor number.
     """
 
-    def __init__ (self, name = None, do_notag = True, tag_re = tag_re) :
+    def __init__ (self, name = None, do_notag = True, tag_re = None) :
         self.name     = name
         self.do_notag = do_notag
         self.tag_re   = tag_re
@@ -46,6 +45,12 @@ class VC (object) :
 
 
 class SVN (VC) :
+
+    tag_re = 'tags/([^/]*(release|V)[_-][^_-]*[_-]?([0-9]+[_.-][0-9]+))'
+
+    def __init__ (self, name = None, do_notag = True, tag_re = tag_re) :
+        VC.__init__ (self, name, do_notag, tag_re)
+    # end def __init__
 
     def author (self) :
         line = get_popen ("svn info | grep '^Last Changed Author:'")
@@ -198,7 +203,6 @@ if __name__ == "__main__" :
         ( "-r", "--tag-re"
         , dest    = "tag_re"
         , help    = "Tag regular expression"
-        , default = tag_re
         )
     parser.add_argument \
         ( "-s", "--re-structured-text"
