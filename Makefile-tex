@@ -188,8 +188,7 @@ EPS2EPS=eps2eps
 	$(LASTRELEASE_CMD) -A "$(AUTHOR)" -n -s $(PROJECT) > $@
 
 %.grev: %.rev
-	sed -e 's/:Date:/:Datum:/' -e 's/:Author:/:Autor:/'                  \
-	    -e 's/(modified)/(geändert)/' < $< > $@
+	sed -e 's/:Date:/:Datum:/' -e 's/:Author:/:Autor:/' < $< > $@
 
 DATEFMT=\\def\\runtuxdate{\\formatdate{\3}{\2}{\1}}
 %.trev: %.tex $(SOURCES)
