@@ -1,6 +1,9 @@
 ifeq (,${README})
     README=README
 endif
+ifeq (,${PYTHON})
+    PYTHON=python3
+endif
 NOTES=notes
 CHANGES=changes
 # Default can be overridden
@@ -47,11 +50,11 @@ upload_homepage: all
 	touch upload_homepage
 
 announce_pypi: all
-	python setup.py register
+	$(PYTHON) setup.py register
 	touch announce_pypi
 
 upload_pypi: all dist
-	python setup.py sdist upload
+	$(PYTHON) setup.py sdist upload
 	touch upload_pypi
 	touch announce_pypi
 
@@ -73,10 +76,10 @@ upload: all $(RELEASENOTES) dist
 
 FOCUS:=$(shell $(MKCHLOG) sf-release-focus < $(README))
 ifndef URL
-URL:=$(shell python setup.py --url)
+URL:=$(shell $(PYTHON) setup.py --url)
 endif
 ifndef LICENSE
-LICENSE:=$(shell python setup.py --license | sed 's/Library or //')
+LICENSE:=$(shell $(PYTHON) setup.py --license | sed 's/Library or //')
 endif
 
 announce: all $(CHANGES) $(NOTES) dist

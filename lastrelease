@@ -29,7 +29,7 @@ def get_timezone () :
 
 class VC (object) :
     """ Convention: A revision is name_X_Y where name is the released
-        revision and X and Y are major an minor number.
+        revision and X and Y are major and minor number.
     """
 
     def __init__ (self, name = None, do_notag = True, tag_re = None) :
