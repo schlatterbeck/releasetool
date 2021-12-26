@@ -4,6 +4,7 @@ endif
 ifeq (,${PYTHON})
     PYTHON=python3
 endif
+TWINE=twine
 NOTES=notes
 CHANGES=changes
 # Default can be overridden
@@ -23,6 +24,8 @@ P2:=$(shell echo $(PACKAGE) | sed 's/^\(..\).*$$/\1/')
 PROJECT_DOCDIR=/home/groups/$(P1)/$(P2)/$(PACKAGE)/htdocs
 PACKAGE_DIR=/home/frs/project/$(PACKAGE)
 PROJECT_RELEASEDIR=$(PACKAGE_DIR)/$(PACKAGE)
+PKGNAME:=$(shell $(PYTHON) setup.py --name)
+BASENAME:=$(PKGNAME)-$(RELEASE)
 CLEAN=README.html MANIFEST ${CHANGES} ${NOTES} ${RELEASENOTES} \
     announce_pypi upload_pypi announce upload upload_homepage dist build
 
@@ -44,6 +47,10 @@ $(RELEASENOTES): $(NOTES) $(CHANGES)
 	echo Changes:                  >> $@
 	cat $(CHANGES)                 >> $@
 
+dist: all
+	$(PYTHON) setup.py sdist --formats=gztar,zip
+	$(PYTHON) setup.py bdist
+
 upload_homepage: all
 	scp README.html \
             $(USERNAME),$(PROJECT)@$(FRS):$(PROJECT_DOCDIR)/index.html
@@ -54,7 +61,7 @@ announce_pypi: all
 	touch announce_pypi
 
 upload_pypi: all dist
-	$(PYTHON) setup.py sdist upload
+	$(TWINE) upload dist/$(BASENAME)*
 	touch upload_pypi
 	touch announce_pypi
 
@@ -91,6 +98,9 @@ license:
 
 version:
 	@echo "$(RELEASE)"
+
+basename:
+	@echo $(BASENAME)
 
 $(VERSIONPY): $(SRC)
 	echo 'VERSION="$(LASTRELEASE)"' | $(VERSIONSED) > $@
