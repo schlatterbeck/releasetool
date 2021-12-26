@@ -47,9 +47,15 @@ $(RELEASENOTES): $(NOTES) $(CHANGES)
 	echo Changes:                  >> $@
 	cat $(CHANGES)                 >> $@
 
+# We previously had the option '--formats=gztar,zip' for the sdist
+# command. But this produces the error '400 Client Error: Only one sdist
+# may be uploaded per release'. So we only use the default now.
 dist: all
-	$(PYTHON) setup.py sdist --formats=gztar,zip
-	$(PYTHON) setup.py bdist
+	$(PYTHON) setup.py sdist
+
+# These are not working in debian buster with python3.7.3
+#	$(PYTHON) setup.py bdist_egg
+#	$(PYTHON) setup.py bdist_wheel
 
 upload_homepage: all
 	scp README.html \
