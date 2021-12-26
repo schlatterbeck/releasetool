@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import re
@@ -12,7 +12,7 @@ for line in sys.stdin :
         state = 'start_notes'
         if sys.argv [1] == 'sf-release-focus' :
             rf = line.split (':') [1].strip ()
-            print rf
+            print (rf)
         continue
     if not line :
         if state == 'notes' :
@@ -23,4 +23,4 @@ for line in sys.stdin :
     if line and state.startswith ('start_') :
         state = state [6:]
     if sys.argv [1] == state :
-        print line
+        print (line)

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from rsclib.Freshmeat import Freshmeat, Release
 from optparse         import OptionParser
@@ -21,9 +21,9 @@ changelog = open (args [1], 'r').read ()
 r  = Release   (args [2], changelog, False, *opt.tag)
 fm = Freshmeat (args [0], 'releases', put = r)
 if fm.code :
-    print fm.code, fm.result
-    print fm.err
+    print (fm.code, fm.result)
+    print (fm.err)
 else :
-    print fm.pretty ()
+    print (fm.pretty ())
 fm = Freshmeat (args [0], 'releases/pending')
-print fm.pretty ()
+print (fm.pretty ())
