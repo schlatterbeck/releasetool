@@ -55,7 +55,7 @@ OBJ2EPS=tgif -print -eps -adobe -o$(FIGDIR)
 #SK2EPS=sk2ps
 SK2EPS=uniconvertor
 PS2PDF=ps2pdf
-PS2PDFOPT=
+PS2PDFOPT=-dParseDSCComments=false
 DVI2PS=dvips
 PSNUP=psnup -pa4 -2
 OBJ2PS=tgif -print -ps -adobe -gray -o$(FIGDIR)
@@ -74,7 +74,7 @@ MV=mv
 CP=/bin/cp
 SYMLINK=/bin/ln -s -f
 #SVGPRINT=sodipodi -z # Doesn't create bounding box
-SVGPRINT=inkscape -E
+SVGPRINT=inkscape --export-type=eps
 SVG2PDF=inkscape -A
 SVG2PNG=inkscape --export-background=white --export-dpi=300 -e
 PDF2PS=pdf2ps
