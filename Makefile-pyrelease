@@ -12,12 +12,13 @@ ifeq (,${RELEASETOOLS})
     RELEASETOOLS=../releasetools
 endif
 RELEASENOTES=ReleaseNotes.txt
-RELEASE:=$(shell echo $(LASTRELEASE) | sed -e 's/^V_//' -e 's/_/./g')
+RELEASE:=$(shell echo $(LASTRELEASE) \
+          | sed -e 's/^V_//' -e 's/_/./g' -e 's/^v//')
 CSS:=$(RELEASETOOLS)/default.css
 FRS=frs.sourceforge.net
 MKCHLOG=${RELEASETOOLS}/mkchlog.py
 FRESHMEAT=${RELEASETOOLS}/freshmeat.py
-VERSIONSED:=sed -e 's/_/./g' -e 's/V\.//'
+VERSIONSED:=sed -e 's/_/./g' -e 's/[Vv]\.//' -e 's/v//'
 HOSTNAME=web.sourceforge.net
 P1:=$(shell echo $(PACKAGE) | sed 's/^\(.\).*$$/\1/')
 P2:=$(shell echo $(PACKAGE) | sed 's/^\(..\).*$$/\1/')
