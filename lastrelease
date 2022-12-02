@@ -153,6 +153,11 @@ class GIT (VC) :
             line = line [len (name):]
         if line [0] in '-_' :
             line = line [1:]
+        # Replace first '-' with '+' for compat with python local
+        # version identifiers
+        line = line.replace ('-', '+', 1)
+        # And all the others with a '.'
+        line = line.replace ('-', '.')
         return line.strip ()
     # end def up_to_date_rev
 
