@@ -4,6 +4,8 @@ import sys
 import toml
 from importlib import import_module
 
+sys.path.insert (0, '.')
+
 t = toml.load ('pyproject.toml')
 if len (sys.argv) < 2:
     print (t)
