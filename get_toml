@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+
+import sys
+import toml
+from importlib import import_module
+
+t = toml.load ('pyproject.toml')
+if len (sys.argv) < 2:
+    print (t)
+elif sys.argv [1] == 'name':
+    print (t ['project']['name'])
+elif sys.argv [1] == 'license':
+    print (t ['project']['license']['text'])
+elif sys.argv [1] == 'url':
+    print (t ['project']['urls']['Homepage'])
+elif sys.argv [1] == 'version':
+    v = t ['tool']['setuptools']['dynamic']['version']['attr']
+    mod, x = v.rsplit ('.', 1)
+    m = import_module (mod)
+    print (getattr (m, x))
+else:
+    print (t)
