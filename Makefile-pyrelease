@@ -52,20 +52,20 @@ $(RELEASENOTES): $(NOTES) $(CHANGES)
 # We previously had the option '--formats=gztar,zip' for the sdist
 # command. But this produces the error '400 Client Error: Only one sdist
 # may be uploaded per release'. So we only use the default now.
-dist: all
+dist:
 	$(PYTHON) -m build
 
-upload_homepage: all
+upload_homepage: dist
 	scp README.html \
             $(USERNAME),$(PROJECT)@$(FRS):$(PROJECT_DOCDIR)/index.html
 	touch upload_homepage
 
-upload_pypi: all dist
+upload_pypi: dist
 	$(TWINE) upload dist/$(BASENAME)*
 	touch upload_pypi
 	touch announce_pypi
 
-upload: all $(RELEASENOTES) dist
+upload: $(RELEASENOTES) dist
 	@echo Preparing Release $(RELEASE)
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net create || true
 	ssh $(USERNAME),$(PROJECT)@shell.sourceforge.net \
@@ -89,7 +89,7 @@ ifndef LICENSE
 LICENSE:=$(shell $(GET_TOML) license)
 endif
 
-announce: all $(CHANGES) $(NOTES) dist
+announce: $(CHANGES) $(NOTES) dist
 	 $(FRESHMEAT) -t "$(FOCUS)" $(PROJECT) $(NOTES) "$(RELEASE)"
 	 touch announce
 
