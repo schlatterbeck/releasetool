@@ -52,7 +52,7 @@ $(RELEASENOTES): $(NOTES) $(CHANGES)
 # We previously had the option '--formats=gztar,zip' for the sdist
 # command. But this produces the error '400 Client Error: Only one sdist
 # may be uploaded per release'. So we only use the default now.
-dist:
+dist: $(VERSION)
 	$(PYTHON) -m build
 
 upload_homepage: dist
