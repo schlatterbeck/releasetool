@@ -8,7 +8,7 @@ LINKSOURCES=$(LNTEXSRC) $(LNOBJSRC) $(LNSKSRC) $(LNPNGSRC) $(LNJPGSRC) \
     $(LNSVGSRC) $(LNDATASRC) $(LNPPMSRC) $(LNPGMSRC) $(LNPBMSRC)       \
     $(LNTSVGSRC) $(LNFIGSRC) $(LNEPSSRC)
 SOURCES=$(MAINTEXSRC) $(TEXSRC) $(notdir $(LINKSOURCES)) $(OBJSRC) $(EPSSRC) \
-    $(BIBSRC) $(SKSRC) $(PNGSRC) $(JPGSRC) $(FIGSRC)
+    $(BIBSRC) $(SKSRC) $(PNGSRC) $(JPGSRC) $(FIGSRC) $(GIFSRC)
 DVIFILE=$(MAINTEXSRC:.tex=.dvi)
 PSFILES=$(MAINTEXSRC:.tex=.ps)
 PS4UPFILES=$(MAINTEXSRC:.tex=.4.ps)
@@ -32,6 +32,7 @@ BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps)       \
     $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)        \
     $(PPMSRC:.ppm=.eps) $(PGMSRC:.pgm=.eps) $(PBMSRC:.pbm=.eps)          \
     $(TSVGSRC:.tsvg=.eps) $(FIGSRC:.fig=.eps) $(PDFSRC:.pdf=.eps)        \
+    $(GIFSRC:.gif=.eps)                                                  \
     $(notdir                                                             \
     $(LNOBJSRC:.obj=.eps) $(LNSKSRC:.sk=.eps) $(LNPNGSRC:.png=.eps)      \
     $(LNJPGSRC:.jpg=.eps) $(LNSVGSRC:.svg=.eps) $(LNDATASRC:.data=.eps)  \
@@ -83,6 +84,7 @@ TXT2LATEX=rst2latex
 #TXT2LATEX_OPT=
 TXT2HTML=rst2html
 EPS2EPS=eps2eps
+GIF2PNM=giftopnm
 
 # SUFFIXES
 
@@ -157,6 +159,9 @@ EPS2EPS=eps2eps
 
 %.ppm: %.jpg
 	$(DJPEG) $< > $@
+
+%.ppm: %.gif
+	$(GIF2PNM) $< > $@
 
 %.ppm: %.png
 	$(PNGTOPPM) $< > $@
