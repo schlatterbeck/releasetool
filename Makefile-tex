@@ -28,11 +28,12 @@ LOTFILE=$(MAINTEXSRC:.tex=.lot)
 OUTFILE=$(MAINTEXSRC:.tex=.out)
 REVFILES=$(MAINTEXSRC:.tex=.rev) $(MAINTEXSRC:.tex=.grev) \
     $(MAINTEXSRC:.tex=.trev)
-BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps) \
-    $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)  \
-    $(PPMSRC:.ppm=.eps) $(PGMSRC:.pgm=.eps) $(PBMSRC:.pbm=.eps)    \
-    $(TSVGSRC:.tsvg=.eps) $(FIGSRC:.fig=.eps) $(notdir \
-    $(LNOBJSRC:.obj=.eps) $(LNSKSRC:.sk=.eps) $(LNPNGSRC:.png=.eps) \
+BUILTEPS=$(OBJSRC:.obj=.eps) $(SKSRC:.sk=.eps) $(PNGSRC:.png=.eps)       \
+    $(JPGSRC:.jpg=.eps) $(SVGSRC:.svg=.eps) $(DATASRC:.data=.eps)        \
+    $(PPMSRC:.ppm=.eps) $(PGMSRC:.pgm=.eps) $(PBMSRC:.pbm=.eps)          \
+    $(TSVGSRC:.tsvg=.eps) $(FIGSRC:.fig=.eps) $(PDFSRC:.pdf=.eps)        \
+    $(notdir                                                             \
+    $(LNOBJSRC:.obj=.eps) $(LNSKSRC:.sk=.eps) $(LNPNGSRC:.png=.eps)      \
     $(LNJPGSRC:.jpg=.eps) $(LNSVGSRC:.svg=.eps) $(LNDATASRC:.data=.eps)  \
     $(LNPPMSRC:.ppm=.eps) $(LNPGMSRC:.pgm=.eps) $(LNPBMSRC:.pbm=.eps)    \
     $(LNTSVGSRC:.tsvg=.eps) $(LNFIGSRC:.fig=.eps))
@@ -168,6 +169,9 @@ EPS2EPS=eps2eps
 
 %.eps: %.pbm
 	$(PNMTOPS) $(PNMTOPS_OPT) $< > $@
+
+%.eps: %.pdf
+	$(PDF2PS) $< $@
 
 %.pdfp: %.svg
 	$(SVG2PDF) '$@' $<
