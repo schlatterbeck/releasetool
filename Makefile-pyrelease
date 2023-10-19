@@ -108,5 +108,8 @@ basename:
 $(VERSIONPY): $(SRC)
 	echo 'VERSION="$(LASTRELEASE)"' | $(VERSIONSED) > $@
 
+$(VERSIONTXT): $(SRC)
+	echo '$(LASTRELEASE)' | $(VERSIONSED) > $@
+
 $(VERSIONH): $(SRC)
 	echo '#define VERSION "$(LASTRELEASE)"' | $(VERSIONSED) > $@
