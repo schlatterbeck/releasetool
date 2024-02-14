@@ -59,6 +59,7 @@ SK2EPS=uniconvertor
 PS2PDF=ps2pdf
 PS2PDFOPT=-dParseDSCComments=false
 DVI2PS=dvips
+DVI2PS_OPT=-landscaperotate
 PSNUP=psnup -pa4 -2
 OBJ2PS=tgif -print -ps -adobe -gray -o$(FIGDIR)
 PS2PPM=gs -q -dNOPAUSE -r300x300 -sDEVICE=ppm -sOutputFile=-
@@ -134,7 +135,7 @@ GIF2PNM=giftopnm
 	$(PS2PDF) $(PS2PDFOPT) $< $@
 
 %.ps: %.dvi
-	$(DVI2PS) -o $@ $<
+	$(DVI2PS) $(DVI2PS_OPT) -o $@ $<
 
 %.4.ps: %.ps
 	psnup -l -pa4 -W297.63779500 -H420.94488 -b5mm -4 $< > $@
