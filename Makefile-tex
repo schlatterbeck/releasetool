@@ -1,7 +1,11 @@
 ##
 ##  File:          Makefile-tex
 ##
-LASTRELEASE_CMD=$(HOME)/checkout/own/projects/releasetools/lastrelease
+ifeq (,${RELEASETOOL})
+    RELEASETOOL=../releasetool
+endif
+
+LASTRELEASE_CMD=${RELEASETOOL}/lastrelease
 
 PROJARCHIVE=$(PROJECT).zip
 LINKSOURCES=$(LNTEXSRC) $(LNOBJSRC) $(LNSKSRC) $(LNPNGSRC) $(LNJPGSRC) \

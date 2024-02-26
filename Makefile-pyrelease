@@ -8,16 +8,16 @@ TWINE=twine
 NOTES=notes
 CHANGES=changes
 # Default can be overridden
-ifeq (,${RELEASETOOLS})
-    RELEASETOOLS=../releasetools
+ifeq (,${RELEASETOOL})
+    RELEASETOOL=../releasetool
 endif
 RELEASENOTES=ReleaseNotes.txt
 RELEASE:=$(shell echo $(LASTRELEASE) \
           | sed -e 's/^V_//' -e 's/_/./g' -e 's/^v//')
-CSS:=$(RELEASETOOLS)/default.css
+CSS:=$(RELEASETOOL)/default.css
 FRS=frs.sourceforge.net
-MKCHLOG=${RELEASETOOLS}/mkchlog.py
-FRESHMEAT=${RELEASETOOLS}/freshmeat.py
+MKCHLOG=${RELEASETOOL}/mkchlog.py
+FRESHMEAT=${RELEASETOOL}/freshmeat.py
 VERSIONSED:=sed -e 's/_/./g' -e 's/[Vv]\.//' -e 's/v//'
 HOSTNAME=web.sourceforge.net
 P1:=$(shell echo $(PACKAGE) | sed 's/^\(.\).*$$/\1/')
@@ -25,7 +25,7 @@ P2:=$(shell echo $(PACKAGE) | sed 's/^\(..\).*$$/\1/')
 PROJECT_DOCDIR=/home/groups/$(P1)/$(P2)/$(PACKAGE)/htdocs
 PACKAGE_DIR=/home/frs/project/$(PACKAGE)
 PROJECT_RELEASEDIR=$(PACKAGE_DIR)/$(PACKAGE)
-GET_TOML:=$(RELEASETOOLS)/get_toml
+GET_TOML:=$(RELEASETOOL)/get_toml
 PKGNAME:=$(shell $(GET_TOML) name)
 BASENAME:=$(PKGNAME)-$(RELEASE)
 CLEAN=README.html MANIFEST ${CHANGES} ${NOTES} ${RELEASENOTES} \
