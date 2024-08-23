@@ -27,12 +27,12 @@ PACKAGE_DIR=/home/frs/project/$(PACKAGE)
 PROJECT_RELEASEDIR=$(PACKAGE_DIR)/$(PACKAGE)
 GET_TOML:=$(RELEASETOOL)/get_toml
 PKGNAME:=$(shell $(GET_TOML) name)
-BASENAME:=$(PKGNAME)-$(RELEASE)
+BASENAME:=$(PROJECT)-$(RELEASE)
 CLEAN=README.html MANIFEST ${CHANGES} ${NOTES} ${RELEASENOTES} \
     announce_pypi upload_pypi announce upload upload_homepage dist build
 
 README.html: $(README) $(CSS)
-	rst2html --stylesheet=$(CSS) $< > $@
+	rst2html --math-output=MathJax --stylesheet=$(CSS) $< > $@
 
 $(NOTES): $(README)
 	$(MKCHLOG) $(NOTES) < $(README) > $@
