@@ -146,7 +146,7 @@ GIF2PNM=giftopnm
 
 # No transparency
 %.eps: %.svg
-	$(SVGPRINT) '$@' $<
+	$(SVGPRINT) --export-filename='$@' $<
 
 #$(SVGPRINT) '$@.tmp' $<
 #$(EPS2EPS) '$@.tmp' '$@'
