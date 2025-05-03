@@ -12,7 +12,10 @@ if len (sys.argv) < 2:
 elif sys.argv [1] == 'name':
     print (t ['project']['name'])
 elif sys.argv [1] == 'license':
-    print (t ['project']['license']['text'])
+    try:
+        print (t ['project']['license']['text'])
+    except TypeError:
+        print (t ['project']['license'])
 elif sys.argv [1] == 'url':
     print (t ['project']['urls']['Homepage'])
 elif sys.argv [1] == 'version':
